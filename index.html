@@ -328,12 +328,27 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
     <div id="adminPanel" class="admin-controls hidden">
       <h3>🔧 관리자 패널</h3>
       <div class="admin-row" style="margin-bottom:12px">
-        <span style="font-size:12px;font-weight:600">사용자 비밀번호:</span>
-        <input type="text" id="adminNewPw" placeholder="숫자 4자리" maxlength="4" style="width:120px">
+        <span style="font-size:12px;font-weight:600">사용자 PW:</span>
+        <input type="text" id="adminNewPw" placeholder="숫자 4자리" maxlength="4" style="width:80px">
         <button class="btn btn-sm btn-primary" onclick="changeUserPw()">변경</button>
         <span style="margin-left:16px;font-size:12px;font-weight:600">배포상태:</span>
         <span id="publishStatus" class="publish-status unpublished">미배포</span>
       </div>
+      
+      <!-- GitHub Config -->
+      <div class="card" style="margin-bottom:12px; border-color:#e0e0e0; background:rgba(255,255,255,0.5)">
+        <div class="card-body" style="padding:10px 15px">
+          <div style="font-size:11px; font-weight:700; color:var(--primary); margin-bottom:8px">⚙️ GitHub 자동 배포 설정 (최초 1회 설정)</div>
+          <div class="admin-row" style="gap:8px">
+            <input type="password" id="ghToken" placeholder="GitHub Token (PAT)" style="width:180px; font-size:11px">
+            <input type="text" id="ghRepo" placeholder="저장소 (예: user/repo-name)" style="width:180px; font-size:11px">
+            <input type="text" id="ghBranch" placeholder="브랜치 (main)" style="width:80px; font-size:11px">
+            <button class="btn btn-sm btn-outline" onclick="saveGHConfig()">💾 설정 저장</button>
+            <span style="font-size:10px; color:var(--text-muted)">※ 토큰은 본인 브라우저에만 저장됩니다.</span>
+          </div>
+        </div>
+      </div>
+
       <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
         <div style="flex:1;min-width:300px">
           <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
@@ -586,6 +601,8 @@ async function doLogin(role) {
       S.rawData = serverData.npsData;
       processData(); showDashboard();
     }
+    // 관리자인 경우 GitHub 설정 로드
+    if (S.role === 'admin') loadGHConfig();
   }
 }
 
@@ -603,22 +620,111 @@ function initApp() {
 /* ═══════════════════════════════════════════
    ADMIN
    ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   ADMIN (GitHub Sync)
+   ═══════════════════════════════════════════ */
+function saveGHConfig() {
+  const token = document.getElementById('ghToken').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  if (!token || !repo) { alert('토큰과 저장소 정보를 입력해주세요.'); return; }
+  localStorage.setItem('nps_gh_token', token);
+  localStorage.setItem('nps_gh_repo', repo);
+  localStorage.setItem('nps_gh_branch', branch);
+  alert('GitHub 설정이 저장되었습니다.');
+}
+
+function loadGHConfig() {
+  document.getElementById('ghToken').value = localStorage.getItem('nps_gh_token') || '';
+  document.getElementById('ghRepo').value = localStorage.getItem('nps_gh_repo') || '';
+  document.getElementById('ghBranch').value = localStorage.getItem('nps_gh_branch') || 'main';
+}
+
+async function syncToGitHub(data) {
+  const token = localStorage.getItem('nps_gh_token');
+  const repo = localStorage.getItem('nps_gh_repo');
+  const branch = localStorage.getItem('nps_gh_branch') || 'main';
+  const path = 'nps_data.json';
+
+  if (!token || !repo) return false;
+
+  try {
+    // 1. Get current file SHA (required for update)
+    const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    
+    let sha = null;
+    if (getRes.ok) {
+      const info = await getRes.json();
+      sha = info.sha;
+    }
+
+    // 2. Put updated content
+    const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Dashboard Auto Update',
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+        sha: sha,
+        branch: branch
+      })
+    });
+
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || '업데이트 실패');
+    }
+    return true;
+  } catch(e) {
+    console.error('GitHub Sync Error:', e);
+    throw e;
+  }
+}
+
+async function syncToServer() {
+  const payload = getPayload();
+  const ok = await syncToGitHub(payload);
+  if (ok) setSyncStatus(true);
+}
+
 async function changeUserPw() {
   const v = document.getElementById('adminNewPw').value.trim();
   if (!/^\d{4}$/.test(v)) { alert('숫자 4자리를 입력해주세요.'); return; }
   S.userPw = v;
   showLoading('비밀번호 변경 중...');
   try { await syncToServer(); hideLoading(); alert('사용자 비밀번호가 변경되었습니다: ' + v); }
-  catch(e) { hideLoading(); alert('저장 실패: ' + e.message); }
+  catch(e) { hideLoading(); if(e.message!=='업데이트 실패') alert('저장 실패: ' + e.message); }
 }
 
 async function doPublish() {
   if (!S.rawData.length) { alert('먼저 데이터를 업로드하세요.'); return; }
   S.published = true;
   const payload = getPayload();
-  CLOUD.download(payload, 'nps_data.json');
-  updatePublishUI();
-  alert('✅ 배포용 파일(nps_data.json)이 생성되었습니다.\n이 파일을 GitHub 레포지토리에 업로드(커밋)하면 온라인에 반영됩니다.');
+  
+  showLoading('GitHub로 배포 중...');
+  try {
+    const isGH = await syncToGitHub(payload);
+    if (isGH) {
+      updatePublishUI();
+      hideLoading();
+      alert('🚀 GitHub로 자동 배포가 완료되었습니다!\n약 1분 후 사이트에 반영됩니다.');
+    } else {
+      // GitHub 설정이 없는 경우 기존처럼 다운로드 방식
+      CLOUD.download(payload, 'nps_data.json');
+      updatePublishUI();
+      hideLoading();
+      alert('✅ 배포용 파일(nps_data.json)이 생성되었습니다.\n이 파일을 GitHub 레포지토리에 업로드(커밋)하면 온라인에 반영됩니다.');
+    }
+  } catch(e) {
+    hideLoading();
+    alert('GitHub 배포 실패: ' + e.message + '\n파일 다운로드 방식으로 대신 시도합니다.');
+    CLOUD.download(payload, 'nps_data.json');
+  }
 }
 
 async function doUnpublish() {
