@@ -581,7 +581,7 @@ async function doLogin(role) {
   document.getElementById('loginOverlay').classList.add('hidden');
 
   if (S.role === 'user') {
-    S.rawData = Array.isArray(serverData.npsData) ? serverData.npsData : [];
+    S.rawData = (serverData && Array.isArray(serverData.npsData)) ? serverData.npsData : [];
     if (!S.published || !S.rawData.length) {
       document.getElementById('notPublished').classList.remove('hidden');
       return;
@@ -595,7 +595,7 @@ async function doLogin(role) {
     document.querySelectorAll('.admin-only-tab').forEach(el=>el.classList.remove('hidden'));
     updatePublishUI();
     setSyncStatus(!!serverData);
-    if (serverData && serverData.npsData && serverData.npsData.length) {
+    if (serverData && Array.isArray(serverData.npsData) && serverData.npsData.length) {
       S.rawData = serverData.npsData;
       processData(); showDashboard();
     }
@@ -718,20 +718,17 @@ async function doPublish() {
     if (isGH) {
       updatePublishUI();
       hideLoading();
-      alert('🚀 GitHub로 자동 배포가 완료되었습니다!
-약 1분 후 사이트에 반영됩니다.');
+      alert('🚀 GitHub로 자동 배포가 완료되었습니다! 약 1분 후 사이트에 반영됩니다.');
     } else {
       // GitHub 설정이 없는 경우 기존처럼 다운로드 방식
       CLOUD.download(payload, 'nps_data.json');
       updatePublishUI();
       hideLoading();
-      alert('✅ 배포용 파일(nps_data.json)이 생성되었습니다.
-이 파일을 GitHub 레포지토리에 업로드(커밋)하면 온라인에 반영됩니다.');
+      alert('✅ 배포용 파일(nps_data.json)이 생성되었습니다. 이 파일을 GitHub 레포지토리에 업로드(커밋)하면 온라인에 반영됩니다.');
     }
   } catch(e) {
     hideLoading();
-    alert('GitHub 배포 실패: ' + e.message + '
-파일 다운로드 방식으로 대신 시도합니다.');
+    alert('GitHub 배포 실패: ' + e.message + ' 파일 다운로드 방식으로 대신 시도합니다.');
     CLOUD.download(payload, 'nps_data.json');
   }
 }
@@ -836,8 +833,7 @@ function parseExcel(rows) {
   const divisionTeams = ['동광주', '서광주', '전북', '제주'];
   const filtered = data.filter(d => divisionTeams.some(t => String(d['팀명']||'').includes(t)));
   
-  if (!filtered.length) { alert('서부마케팅본부 소속 팀 데이터가 없습니다.
-(팀명 컬럼에서 동광주, 서광주, 전북, 제주 확인 필요)'); return; }
+  if (!filtered.length) { alert('서부마케팅본부 소속 팀 데이터가 없습니다. (팀명 컬럼에서 동광주, 서광주, 전북, 제주 확인 필요)'); return; }
   
   // 분기별 누적 대응: 기존 데이터와 합치거나 새로 교체 (사용자 선택에 따르나 여기선 교체로 구현)
   S.rawData = filtered;
@@ -1218,8 +1214,7 @@ async function saveNotice(){
       return;
     } else {
       notice.fileName=file.name+' (용량초과-미저장)';
-      alert('파일 크기가 500KB를 초과하여 서버에 저장되지 않습니다.
-공지 텍스트는 정상 등록됩니다.');
+      alert('파일 크기가 500KB를 초과하여 서버에 저장되지 않습니다. 공지 텍스트는 정상 등록됩니다.');
     }
   }
   S.notices.unshift(notice);
@@ -1271,8 +1266,7 @@ async function submitBoard(){
     const file=fi.files[0];
     item.fileName=file.name;
     if(file.size>500*1024){
-      alert('파일 크기가 500KB를 초과합니다.
-파일명만 기록되고 파일은 서버에 저장되지 않습니다.');
+      alert('파일 크기가 500KB를 초과합니다. 파일명만 기록되고 파일은 서버에 저장되지 않습니다.');
       item.fileData=null;
       S.boardItems.unshift(item);
       showLoading('소명 제출 중...');try{await syncToServer();}catch(e){alert('실패:'+e.message);}hideLoading();renderBoard();document.getElementById('boardForm').classList.add('hidden');alert('소명이 제출되었습니다 (파일 미저장).');
