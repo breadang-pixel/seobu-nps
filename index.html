@@ -554,14 +554,15 @@ async function doLogin(role) {
   if (serverData) {
     S.adminPw = serverData.adminPw || 'admin1234';
     S.userPw = serverData.userPw || '1234';
-    S.published = serverData.published || false;
-    S.notices = serverData.notices || [];
-    S.boardItems = serverData.boardItems || [];
+    S.published = (serverData.published === true || String(serverData.published) === 'true');
+    S.notices = Array.isArray(serverData.notices) ? serverData.notices : [];
+    S.boardItems = Array.isArray(serverData.boardItems) ? serverData.boardItems : [];
     S.viewStats = serverData.viewStats || {};
   } else {
     // 서버 데이터 없을 경우 초기 비밀번호 사용
     S.adminPw = 'admin1234';
     S.userPw = '1234';
+    S.published = false;
   }
 
   // 조회수 증가 (서버 데이터를 덮어쓰지 않고 조회수만 갱신)
@@ -583,7 +584,7 @@ async function doLogin(role) {
   document.getElementById('loginOverlay').classList.add('hidden');
 
   if (S.role === 'user') {
-    if (!S.published || !serverData.npsData || !serverData.npsData.length) {
+    if (!S.published || !serverData || !serverData.npsData || !serverData.npsData.length) {
       document.getElementById('notPublished').classList.remove('hidden');
       return;
     }
@@ -757,7 +758,7 @@ function getPayload() {
     published: S.published,
     notices: S.notices,
     boardItems: S.boardItems.map(b => ({ agency: b.agency, store: b.store, date: b.date, fileName: b.fileName, fileData: b.fileData || null })),
-    npsData: S.published ? compact : [],
+    npsData: compact, // 배포 상태와 무관하게 데이터 자체는 항상 보관 (유실 방지)
     viewStats: S.viewStats || {},
     updatedAt: new Date().toISOString()
   };
@@ -1527,7 +1528,6 @@ function renderTab7() {
   if (!data.length) {
     coachingArea.innerHTML = '<div class="card-body" style="text-align:center; padding:60px; color:var(--text-muted);"><div style="font-size:40px; margin-bottom:15px">📊</div>분석할 데이터가 없습니다. 엑셀 업로드 후 조회 버튼을 눌러주세요.</div>';
     weakArea.innerHTML = '<p class="dim" style="text-align:center; padding:30px;">데이터가 없습니다.</p>';
-    listArea.innerHTML = '<p class="dim" style="text-align:center; padding:30px;">데이터가 없습니다.</p>';
     return;
   }
 
