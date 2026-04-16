@@ -583,12 +583,11 @@ async function doLogin(role) {
   err.textContent = '';
   document.getElementById('loginOverlay').classList.add('hidden');
 
-  if (S.role === 'user') {
-    if (!S.published || !serverData || !serverData.npsData || !serverData.npsData.length) {
+    S.rawData = Array.isArray(serverData.npsData) ? serverData.npsData : [];
+    if (!S.rawData.length) {
       document.getElementById('notPublished').classList.remove('hidden');
       return;
     }
-    S.rawData = serverData.npsData;
     initApp();
   } else {
     document.getElementById('mainApp').classList.remove('hidden');
@@ -610,12 +609,20 @@ async function doLogin(role) {
 function doLogout() { location.reload(); }
 
 function initApp() {
-  document.getElementById('mainApp').classList.remove('hidden');
-  document.getElementById('roleBadge').textContent = '👤 사용자';
-  document.getElementById('boardUserForm').classList.remove('hidden');
-  setSyncStatus(true);
-  updateViewCountUI();
-  processData(); showDashboard();
+  try {
+    document.getElementById('mainApp').classList.remove('hidden');
+    document.getElementById('roleBadge').textContent = '👤 사용자';
+    document.getElementById('boardUserForm').classList.remove('hidden');
+    setSyncStatus(true);
+    updateViewCountUI();
+    processData(); 
+    showDashboard();
+  } catch(e) {
+    console.error('앱 초기화 오류:', e);
+    alert('데이터를 처리하는 중 오류가 발생했습니다: ' + e.message);
+    document.getElementById('notPublished').classList.remove('hidden');
+    document.getElementById('mainApp').classList.add('hidden');
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -850,8 +857,8 @@ function processData() {
 
     d._team = String(findValue(['팀명', '팀'])).trim() || '미분류';
     
-    const rawAgency = String(findValue(['대리점명', '대리점'])).trim();
-    const rawStore = String(findValue(['매장명', '매장', '관리대상매장'])).trim();
+    const rawAgency = String(findValue(['대리점명', '대리점']) || '').trim();
+    const rawStore = String(findValue(['매장명', '매장', '관리대상매장']) || '').trim();
     
     d._agency = rawAgency.replace(/대리점$/g, '').trim(); 
     d._store = rawStore.replace(/대리점 /g, ' ').replace(/대리점$/g, '').trim(); 
