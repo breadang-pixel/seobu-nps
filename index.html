@@ -1336,7 +1336,7 @@ function openChartPopup(agencyName){
   document.getElementById('chartPopupOverlay')?.classList.remove('hidden');
   if(_popupChart){_popupChart.destroy();}
   const body=document.getElementById('chartPopupBody');
-  if(body) { body.innerHTML='<div style="position:relative;height:200px"><canvas id="chartPopupCanvas"></canvas></div>'; setTimeout(()=>{ _popupChart=buildAgencyChartOnCanvas('chartPopupCanvas',agencyName,S.filteredData,{legendSize:13,pointR:5,borderW:3,yMin:30}); },100); }
+  if(body) { body.innerHTML='<div style="position:relative;height:400px"><canvas id="chartPopupCanvas"></canvas></div>'; setTimeout(()=>{ _popupChart=buildAgencyChartOnCanvas('chartPopupCanvas',agencyName,S.filteredData,{legendSize:13,pointR:5,borderW:3,yMin:30}); },100); }
 }
 function closeChartPopup(){ document.getElementById('chartPopupOverlay')?.classList.add('hidden'); if(_popupChart)_popupChart.destroy(); }
 function captureChartPopup(){
