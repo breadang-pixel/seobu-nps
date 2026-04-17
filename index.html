@@ -1244,7 +1244,7 @@ function renderTeamDailyCharts(){
 
   // grid-template-columns: 1fr; 로 상하 배치 강제
   let html='<div class="chart-grid" style="grid-template-columns: 1fr;">';
-  teams.forEach((t, i) => { html+=`<div class="chart-card"><h4>📈 ${t} 변동추이</h4><canvas id="teamChart${i}" height="60"></canvas></div>`; });
+  teams.forEach((t, i) => { html+=`<div class="chart-card"><h4>📈 ${t} 변동추이</h4><div style="position:relative;height:160px"><canvas id="teamChart${i}"></canvas></div></div>`; });
   area.innerHTML = html + '</div>';
   
   teams.forEach((t, i) => {
@@ -1306,7 +1306,7 @@ function renderAgencyDailyCharts(){
 
   // grid-template-columns: 1fr 1fr; 로 2열 배치 강제
   let html='<div class="chart-grid" style="grid-template-columns: 1fr 1fr;">';
-  pageAgencies.forEach((ag,i)=>{ html+=`<div class="chart-card" onclick="openChartPopup('${ag.replace(/'/g,"\\'")}')"><h4>${ag} <span style="font-size:10px;color:var(--text-muted);font-weight:400">🔍 클릭하여 확대</span></h4><canvas id="agChart${i}" height="80"></canvas></div>`; });
+  pageAgencies.forEach((ag,i)=>{ html+=`<div class="chart-card" onclick="openChartPopup('${ag.replace(/'/g,"\\'")}')"><h4>${ag} <span style="font-size:10px;color:var(--text-muted);font-weight:400">🔍 클릭하여 확대</span></h4><div style="position:relative;height:160px"><canvas id="agChart${i}"></canvas></div></div>`; });
   area.innerHTML=html+'</div>';
 
   pageAgencies.forEach((ag,i)=>{
@@ -1336,7 +1336,7 @@ function openChartPopup(agencyName){
   document.getElementById('chartPopupOverlay')?.classList.remove('hidden');
   if(_popupChart){_popupChart.destroy();}
   const body=document.getElementById('chartPopupBody');
-  if(body) { body.innerHTML='<canvas id="chartPopupCanvas" height="100"></canvas>'; setTimeout(()=>{ _popupChart=buildAgencyChartOnCanvas('chartPopupCanvas',agencyName,S.filteredData,{legendSize:13,pointR:5,borderW:3,yMin:30}); },100); }
+  if(body) { body.innerHTML='<div style="position:relative;height:200px"><canvas id="chartPopupCanvas"></canvas></div>'; setTimeout(()=>{ _popupChart=buildAgencyChartOnCanvas('chartPopupCanvas',agencyName,S.filteredData,{legendSize:13,pointR:5,borderW:3,yMin:30}); },100); }
 }
 function closeChartPopup(){ document.getElementById('chartPopupOverlay')?.classList.add('hidden'); if(_popupChart)_popupChart.destroy(); }
 function captureChartPopup(){
