@@ -262,26 +262,22 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
 </head>
 <body>
 
-<!-- UPDATE BANNER -->
 <div id="updateBanner" class="update-banner hidden">
   <span>🔔 새로운 데이터가 배포되었습니다!</span>
   <button onclick="location.reload()">새로고침</button>
   <button class="close-banner" onclick="document.getElementById('updateBanner').classList.add('hidden')">&times;</button>
 </div>
 
-<!-- INSTALL PROMPT -->
 <div id="installPrompt" class="install-prompt hidden">
   <span>📱 홈 화면에 앱으로 설치하시겠습니까?</span>
   <button class="install-btn" onclick="installPWA()">설치</button>
   <button class="dismiss-btn" onclick="dismissInstall()">다음에</button>
 </div>
 
-<!-- LOADING -->
 <div id="loadingOverlay" class="overlay loading-overlay hidden">
   <div style="text-align:center"><div class="loading-spinner"></div><div class="loading-text" id="loadingText">로딩 중...</div></div>
 </div>
 
-<!-- LOGIN -->
 <div id="loginOverlay" class="overlay login-overlay">
   <div class="login-box">
     <div style="font-size:40px;margin-bottom:10px">📊</div>
@@ -299,7 +295,6 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
   </div>
 </div>
 
-<!-- NOT PUBLISHED -->
 <div id="notPublished" class="not-published hidden">
   <div class="icon">🔒</div>
   <h2>대시보드 준비 중</h2>
@@ -307,7 +302,6 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
   <button class="btn btn-primary" style="margin-top:20px" onclick="location.reload()">🔄 새로고침</button>
 </div>
 
-<!-- MAIN APP -->
 <div id="mainApp" class="hidden">
   <div class="header">
     <h1>📊 서부마케팅본부 NPS 현황 <span class="badge" id="headerDateRange"></span></h1>
@@ -323,7 +317,6 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
     </div>
   </div>
   <div class="container">
-    <!-- ADMIN -->
     <div id="adminPanel" class="admin-controls hidden">
       <h3>🔧 관리자 패널</h3>
       <div class="admin-row" style="margin-bottom:12px">
@@ -334,7 +327,6 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
         <span id="publishStatus" class="publish-status unpublished">미배포</span>
       </div>
       
-      <!-- GitHub Config -->
       <div class="card" style="margin-bottom:12px; border-color:#e0e0e0; background:rgba(255,255,255,0.5)">
         <div class="card-body" style="padding:10px 15px">
           <div style="font-size:11px; font-weight:700; color:var(--primary); margin-bottom:8px">⚙️ GitHub 자동 배포 설정 (최초 1회 설정)</div>
@@ -363,12 +355,9 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
         </div>
       </div>
     </div>
-    <!-- 0. TEAM SCOREBOARD (GAUGES) -->
     <div id="teamScoreboard" class="hidden" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:16px;">
-      <!-- Team cards will be injected here -->
-    </div>
+      </div>
 
-    <!-- 1. FILTERS -->
     <div id="filterSection" class="filter-bar hidden">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <h3>🔍 데이터 필터 및 검색</h3>
@@ -388,12 +377,10 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
       </div>
       <div id="filterSummary" class="filter-summary hidden"></div>
     </div>
-    <!-- 2. TODAY ALERT -->
     <div id="todayAlert" class="today-alert hidden">
       <h3>🚨 오늘의 비추천/중립 현황 <span style="font-size:12px;font-weight:400">(최신 평가일 기준)</span> _ <span style="color:var(--danger);font-size:13px">비추천/중립 발생 사유 제출해 주세요.</span></h3>
       <div id="todayAlertChips" class="alert-chips"></div>
     </div>
-    <!-- 3. TABS -->
     <div id="tabsSection" class="hidden">
       <div class="tab-nav">
         <button class="tab-btn active" data-tab="tab1">📋 대리점별 NPS현황</button>
@@ -410,25 +397,20 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
         <div class="tab-pane" id="tab3"><div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-sm btn-capture" onclick="captureTab('tab3')">📷 캡쳐하기</button></div><div class="search-bar"><input type="text" id="detailSearch" placeholder="매장명, 담당자, 업무유형 등 검색..." oninput="debouncedRenderDetail()"></div><div id="tab3Content"></div><div id="tab3Pagination" class="pagination"></div></div>
         <div class="tab-pane" id="tab4"><div id="noticeAdminBtn" class="hidden" style="text-align:right;margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="showNoticeForm()">✏️ 공지 작성</button></div><div id="noticeList"></div><div id="noticeDetail" class="hidden"></div><div id="noticeForm" class="hidden"></div></div>
         <div class="tab-pane" id="tab5"><div id="boardUserForm" class="hidden"><button class="btn btn-sm btn-primary" onclick="showBoardForm()" style="margin-bottom:12px">📎 소명 제출하기</button></div><div id="boardForm" class="hidden"></div><div id="boardList"></div></div>
-        <!-- TAB6: 일별 변동추이 -->
         <div class="tab-pane" id="tab6">
           <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-sm btn-capture" onclick="captureTab('tab6')">📷 캡쳐하기</button></div>
           <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>📈 서광주팀 일별 NPS 변동추이</h3></div><div class="card-body"><canvas id="chartTeamDaily" height="80"></canvas></div></div>
-          <!-- 관리자 전용: 부진 대리점 -->
           <div id="weakAgencySection" class="card hidden" style="margin-bottom:16px;border-color:#FFCDD2">
             <div class="card-header" style="background:#FFF3E0"><h3>⚠️ 최근 1주일 팀 평균 미만 대리점 변동추이</h3></div>
             <div class="card-body" id="weakAgencyChartsArea"></div>
           </div>
           <div class="card"><div class="card-header"><h3>📊 대리점별 일별 NPS 변동추이</h3><span style="font-size:10px;color:var(--text-muted);margin-left:8px">(클릭하면 확대)</span><div id="agencyChartPagination" style="display:flex;gap:6px;align-items:center;margin-left:auto"></div></div><div class="card-body" id="agencyChartsArea"></div></div>
         </div>
-          <!-- TAB7: 마케터 To-Do (관리자 전용) -->
           <div class="tab-pane" id="tab7">
             <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-sm btn-danger" onclick="downloadTodoPDF()">📄 PDF 보고서 다운로드</button></div>
             <div id="tab7PrintArea">
-              <!-- 1. 업무유형별 코칭 가이드 -->
               <div id="todoCoachingContent"></div>
               
-              <!-- 2. 비판매성 부진현황 상세 조회 (매장별) -->
               <div class="card" style="margin-top:20px">
                 <div class="card-header"><h3>📊 비판매성 부진현황 상세 조회</h3></div>
                 <div class="card-body">
@@ -443,21 +425,17 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
           </div>
       </div>
     </div>
-    <!-- 4. 우수점 -->
     <div id="topSection" class="hidden">
       <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>🏆 월 누적 NPS 우수점 현황</h3></div><div class="card-body"><div class="top-section" id="topExcellent"></div></div></div>
-      <!-- 5. 부진점 -->
       <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>⚠️ 월 누적 NPS 부진점 현황</h3></div><div class="card-body"><div class="top-section" id="topPoor"></div></div></div>
     </div>
   </div>
 </div>
 
-<!-- SUB DETAIL -->
 <div id="subDetailOverlay" class="sub-detail-overlay hidden" onclick="if(event.target===this)closeSubDetail()">
   <div class="sub-detail-modal"><div class="card-header"><h3 id="subDetailTitle"></h3><button class="modal-close" onclick="closeSubDetail()">&times;</button></div><div class="card-body" id="subDetailBody"></div></div>
 </div>
 
-<!-- CHART POPUP -->
 <div id="chartPopupOverlay" class="sub-detail-overlay hidden" onclick="if(event.target===this)closeChartPopup()">
   <div class="sub-detail-modal" style="max-width:95%;width:900px">
     <div class="card-header">
@@ -475,12 +453,18 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
 
 <script>
 const CLOUD = {
-  // GitHub 연동: nps_data.json 파일을 같은 저장소(또는 설정된 URL)에서 가져옴
   url: './nps_data.json', 
 
   async read() {
     try {
-      const res = await fetch(this.url + '?v=' + Date.now()); // 캐시 방지
+      // 강력한 캐시 방지 적용 (no-store 및 헤더 추가)
+      const res = await fetch(this.url + '?v=' + new Date().getTime(), {
+        cache: 'no-store',
+        headers: {
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache'
+        }
+      }); 
       if (!res.ok) throw new Error('데이터 파일을 찾을 수 없습니다.');
       return await res.json();
     } catch(e) {
@@ -489,7 +473,6 @@ const CLOUD = {
     }
   },
 
-  // 관리자가 배포 시 JSON 파일을 생성하여 다운로드 (이후 GitHub에 수동 업로드)
   download(data, filename = 'nps_data.json') {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -529,7 +512,10 @@ function showLoading(msg) {
   const overlay = document.getElementById('loadingOverlay');
   if (overlay) overlay.classList.remove('hidden'); 
 }
-function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+function hideLoading() { 
+  const overlay = document.getElementById('loadingOverlay');
+  if (overlay) overlay.classList.add('hidden'); 
+}
 function setSyncStatus(ok) {
   const el = document.getElementById('syncIndicator');
   if (!el) return;
@@ -541,7 +527,8 @@ function setSyncStatus(ok) {
    LOGIN
    ═══════════════════════════════════════════ */
 async function doLogin(role) {
-  const pw = document.getElementById('loginPw').value;
+  const pwEl = document.getElementById('loginPw');
+  const pw = pwEl ? pwEl.value : '';
   const err = document.getElementById('loginError');
 
   showLoading('서버에서 데이터 확인 중...');
@@ -555,7 +542,6 @@ async function doLogin(role) {
   }
   hideLoading();
 
-  // Load config from server
   if (serverData) {
     S.adminPw = serverData.adminPw || 'admin1234';
     S.userPw = serverData.userPw || '1234';
@@ -564,19 +550,15 @@ async function doLogin(role) {
     S.boardItems = Array.isArray(serverData.boardItems) ? serverData.boardItems : [];
     S.viewStats = serverData.viewStats || {};
   } else {
-    // 서버 데이터 없을 경우 초기 비밀번호 사용
     S.adminPw = 'admin1234';
     S.userPw = '1234';
     S.published = false;
   }
 
-  // 조회수 증가 (서버 데이터를 덮어쓰지 않고 조회수만 갱신)
   const today = new Date().toISOString().slice(0,10);
   if (!S.viewStats[today]) S.viewStats[today] = 0;
   S.viewStats[today]++;
-  // 조회수만 안전하게 업데이트 (npsData 건드리지 않음)
-  try { updateViewStatsOnly(serverData).catch(()=>{}); } catch(e) {}
-
+  
   if (role === 'admin') {
     if (pw !== S.adminPw) { if (err) err.textContent = '관리자 비밀번호가 올바르지 않습니다.'; return; }
     S.role = 'admin';
@@ -592,7 +574,8 @@ async function doLogin(role) {
   if (S.role === 'user') {
     S.rawData = (serverData && Array.isArray(serverData.npsData)) ? serverData.npsData : [];
     if (!S.published || !S.rawData.length) {
-      document.getElementById('notPublished').classList.remove('hidden');
+      const npEl = document.getElementById('notPublished');
+      if (npEl) npEl.classList.remove('hidden');
       return;
     }
     initApp();
@@ -603,7 +586,8 @@ async function doLogin(role) {
     if (adminPanel) adminPanel.classList.remove('hidden');
     const rBadge = document.getElementById('roleBadge');
     if (rBadge) rBadge.textContent = '👑 관리자';
-    document.getElementById('noticeAdminBtn').classList.remove('hidden');
+    const nBtn = document.getElementById('noticeAdminBtn');
+    if (nBtn) nBtn.classList.remove('hidden');
     document.querySelectorAll('.admin-only-tab').forEach(el=>el.classList.remove('hidden'));
     updatePublishUI();
     setSyncStatus(!!serverData);
@@ -632,21 +616,19 @@ function initApp() {
   } catch(e) {
     console.error('앱 초기화 오류:', e);
     alert('데이터를 처리하는 중 오류가 발생했습니다: ' + e.message);
-    document.getElementById('notPublished').classList.remove('hidden');
-    document.getElementById('mainApp').classList.add('hidden');
+    const npEl = document.getElementById('notPublished');
+    if (npEl) npEl.classList.remove('hidden');
+    if (mainApp) mainApp.classList.add('hidden');
   }
 }
 
 /* ═══════════════════════════════════════════
-   ADMIN
-   ═══════════════════════════════════════════ */
-/* ═══════════════════════════════════════════
    ADMIN (GitHub Sync)
    ═══════════════════════════════════════════ */
 function saveGHConfig() {
-  const token = document.getElementById('ghToken').value.trim();
-  const repo = document.getElementById('ghRepo').value.trim();
-  const branch = document.getElementById('ghBranch').value.trim() || 'main';
+  const token = document.getElementById('ghToken')?.value.trim() || '';
+  const repo = document.getElementById('ghRepo')?.value.trim() || '';
+  const branch = document.getElementById('ghBranch')?.value.trim() || 'main';
   if (!token || !repo) { alert('토큰과 저장소 정보를 입력해주세요.'); return; }
   localStorage.setItem('nps_gh_token', token);
   localStorage.setItem('nps_gh_repo', repo);
@@ -654,11 +636,13 @@ function saveGHConfig() {
   alert('GitHub 설정이 저장되었습니다.');
 }
 
-
 function loadGHConfig() {
-  document.getElementById('ghToken').value = localStorage.getItem('nps_gh_token') || '';
-  document.getElementById('ghRepo').value = localStorage.getItem('nps_gh_repo') || '';
-  document.getElementById('ghBranch').value = localStorage.getItem('nps_gh_branch') || 'main';
+  const ghToken = document.getElementById('ghToken');
+  const ghRepo = document.getElementById('ghRepo');
+  const ghBranch = document.getElementById('ghBranch');
+  if (ghToken) ghToken.value = localStorage.getItem('nps_gh_token') || '';
+  if (ghRepo) ghRepo.value = localStorage.getItem('nps_gh_repo') || '';
+  if (ghBranch) ghBranch.value = localStorage.getItem('nps_gh_branch') || 'main';
 }
 
 async function syncToGitHub(data) {
@@ -670,7 +654,6 @@ async function syncToGitHub(data) {
   if (!token || !repo) return false;
 
   try {
-    // 1. Get current file SHA (required for update)
     const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
       headers: { 'Authorization': `token ${token}` }
     });
@@ -681,7 +664,6 @@ async function syncToGitHub(data) {
       sha = info.sha;
     }
 
-    // 2. Put updated content
     const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
       method: 'PUT',
       headers: {
@@ -714,7 +696,8 @@ async function syncToServer() {
 }
 
 async function changeUserPw() {
-  const v = document.getElementById('adminNewPw').value.trim();
+  const vEl = document.getElementById('adminNewPw');
+  const v = vEl ? vEl.value.trim() : '';
   if (!/^\d{4}$/.test(v)) { alert('숫자 4자리를 입력해주세요.'); return; }
   S.userPw = v;
   showLoading('비밀번호 변경 중...');
@@ -733,13 +716,12 @@ async function doPublish() {
     if (isGH) {
       updatePublishUI();
       hideLoading();
-      alert('🚀 GitHub로 자동 배포가 완료되었습니다! 약 1분 후 사이트에 반영됩니다.');
+      alert('🚀 GitHub로 배포가 완료되었습니다!');
     } else {
-      // GitHub 설정이 없는 경우 기존처럼 다운로드 방식
       CLOUD.download(payload, 'nps_data.json');
       updatePublishUI();
       hideLoading();
-      alert('✅ 배포용 파일(nps_data.json)이 생성되었습니다. 이 파일을 GitHub 레포지토리에 업로드(커밋)하면 온라인에 반영됩니다.');
+      alert('✅ 배포용 파일(nps_data.json)이 생성되었습니다.');
     }
   } catch(e) {
     hideLoading();
@@ -779,30 +761,18 @@ function getPayload() {
     published: S.published,
     notices: S.notices,
     boardItems: S.boardItems.map(b => ({ agency: b.agency, store: b.store, date: b.date, fileName: b.fileName, fileData: b.fileData || null })),
-    npsData: compact, // 배포 상태와 무관하게 데이터 자체는 항상 보관 (유실 방지)
+    npsData: compact,
     viewStats: S.viewStats || {},
     updatedAt: new Date().toISOString()
   };
 }
 
-// 탭 전환 시 렌더링 보완
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.getAttribute('data-tab');
-    if (tab === 'tab6') {
-      setTimeout(renderTab6, 50); // 탭이 표시된 후 차트 재렌더링
-    }
-    if (tab === 'tab7' && S.role === 'admin') {
-      setTimeout(renderTab7, 0); // 탭 클릭 시 즉시 렌더링 보장
-    }
+    if (tab === 'tab7' && S.role === 'admin') setTimeout(renderTab7, 0); 
   });
 });
-
-// 조회수만 업데이트 (서버의 기존 npsData를 보존)
-// 조회수 업데이트는 더 이상 서버 쓰기를 하지 않음 (로컬 캐시 등으로 대체 가능하나 현재는 비활성)
-async function updateViewStatsOnly(existingServerData) {
-  return; 
-}
 
 /* ═══════════════════════════════════════════
    FILE UPLOAD
@@ -817,7 +787,8 @@ fileInput?.addEventListener('change', e => handleFile(e.target.files[0]));
 function handleFile(file) {
   if (!file) return;
   if (!file.name.match(/\.xlsx?$/i)) { alert('엑셀(.xlsx) 파일만 업로드 가능합니다.'); return; }
-  document.getElementById('fileName').textContent = '📄 ' + file.name;
+  const fnEl = document.getElementById('fileName');
+  if(fnEl) fnEl.textContent = '📄 ' + file.name;
   showLoading('엑셀 파일 파싱 중...');
   const reader = new FileReader();
   reader.onload = e => {
@@ -848,15 +819,14 @@ function parseExcel(rows) {
     data.push(obj);
   }
   
-  // 전체 팀 데이터 포함 (동광주, 서광주, 전북, 제주)
   const divisionTeams = ['동광주', '서광주', '전북', '제주'];
   const filtered = data.filter(d => divisionTeams.some(t => String(d['팀명']||'').includes(t)));
   
-  if (!filtered.length) { alert('서부마케팅본부 소속 팀 데이터가 없습니다. (팀명 컬럼에서 동광주, 서광주, 전북, 제주 확인 필요)'); return; }
+  if (!filtered.length) { alert('서부마케팅본부 소속 팀 데이터가 없습니다.'); return; }
   
-  // 분기별 누적 대응: 기존 데이터와 합치거나 새로 교체 (사용자 선택에 따르나 여기선 교체로 구현)
   S.rawData = filtered;
-  document.getElementById('publishBtn').disabled = false;
+  const pbBtn = document.getElementById('publishBtn');
+  if(pbBtn) pbBtn.disabled = false;
   processData(); showDashboard();
   alert(filtered.length + '건의 서부마케팅본부 데이터가 로드되었습니다.');
 }
@@ -866,27 +836,22 @@ function parseExcel(rows) {
    ═══════════════════════════════════════════ */
 function processData() {
   S.rawData.forEach(d => {
-    // 컬럼명 유연성 확보 (업무유형, 업무, 유형 등 대응)
     const findValue = (keys) => {
       for (let k of keys) { if (d[k] !== undefined) return d[k]; }
       return '';
     };
 
     d._team = String(findValue(['팀명', '팀'])).trim() || '미분류';
-    
     const rawAgency = String(findValue(['대리점명', '대리점']) || '').trim();
     const rawStore = String(findValue(['매장명', '매장', '관리대상매장']) || '').trim();
     
     d._agency = rawAgency.replace(/대리점$/g, '').trim(); 
     d._store = rawStore.replace(/대리점 /g, ' ').replace(/대리점$/g, '').trim(); 
-    
     d._gubun = String(findValue(['구분', 'NPS구분', 'NPS 구분'])).trim();
     d._bizType = String(findValue(['업무유형', '유형', '업무'])).trim();
-    
     d._npsType = ['신규가입','기기변경'].includes(d._bizType) ? '판매성' : '비판매성';
     d._score = Number(findValue(['합계', '점수', 'NPS점수'])) || 0;
     
-    // 날짜 처리
     const bd = String(findValue(['업무처리일자', '처리일자', '일자']) || '').replace(/\.0$/, '');
     d._bizDate = bd.length === 8 ? bd.slice(0,4)+'-'+bd.slice(4,6)+'-'+bd.slice(6,8) : bd;
     
@@ -912,12 +877,16 @@ function getFilteredData() {
   if (st.length && st.length < allSt.length) data = data.filter(d => st.includes(d._store));
   const g = getMultiSelectValues('msGubun');
   if (g.length && g.length < 3) data = data.filter(d => g.includes(d._gubun));
-  const df = document.getElementById('filterDateFrom').value, dt = document.getElementById('filterDateTo').value;
+  
+  const dfEl = document.getElementById('filterDateFrom');
+  const dtEl = document.getElementById('filterDateTo');
+  const df = dfEl ? dfEl.value : '';
+  const dt = dtEl ? dtEl.value : '';
   if (df) data = data.filter(d => d._bizDate >= df);
   if (dt) data = data.filter(d => d._bizDate <= dt);
   
-  // 통합 검색
-  const q = document.getElementById('globalSearch').value.trim().toLowerCase();
+  const gsEl = document.getElementById('globalSearch');
+  const q = gsEl ? gsEl.value.trim().toLowerCase() : '';
   if (q) {
     data = data.filter(d => 
       d._agency.toLowerCase().includes(q) || 
@@ -950,13 +919,14 @@ function buildMultiSelect(id, opts, onChange) {
   trigger.onclick=e=>{e.stopPropagation();document.querySelectorAll('.ms-dropdown.open').forEach(x=>{if(x!==dd)x.classList.remove('open')});dd.classList.toggle('open');};
 }
 function updMs(w){
+  if (!w) return;
   const ch=w.querySelectorAll('.ms-option input'),t=ch.length,c=[...ch].filter(x=>x.checked).length;
   const triggerSpan = w.querySelector('.ms-trigger span');
   if (triggerSpan) triggerSpan.textContent=c===t?`전체 (${t})`:`${c}개 선택`;
 }
 function getMultiSelectValues(id){const w=document.getElementById(id);return w?[...w.querySelectorAll('.ms-option input:checked')].map(c=>c.value):[];}
 function getMultiSelectOptions(id){const w=document.getElementById(id);return w?[...w.querySelectorAll('.ms-option input')].map(c=>c.value):[];}
-function msAll(btn,check){btn.closest('.ms-dropdown').querySelectorAll('.ms-option input').forEach(c=>c.checked=check);updMs(btn.closest('.ms-wrap'));applyFilters();}
+function msAll(btn,check){const wrap=btn.closest('.ms-dropdown'); if(wrap){wrap.querySelectorAll('.ms-option input').forEach(c=>c.checked=check);const msWrap=btn.closest('.ms-wrap');if(msWrap)updMs(msWrap);applyFilters();}}
 document.addEventListener('click',()=>document.querySelectorAll('.ms-dropdown.open').forEach(d=>d.classList.remove('open')));
 
 /* ═══════════════════════════════════════════
@@ -964,10 +934,17 @@ document.addEventListener('click',()=>document.querySelectorAll('.ms-dropdown.op
    ═══════════════════════════════════════════ */
 function showDashboard() {
   if (!S.rawData.length) return;
-  ['filterSection','topSection','tabsSection','teamScoreboard'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('hidden');});
+  ['filterSection','topSection','tabsSection','teamScoreboard'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.classList.remove('hidden');
+  });
+  
   const dates = S.rawData.map(d=>d._bizDate).filter(Boolean).sort();
-  document.getElementById('filterDateFrom').value=dates[0]||'';
-  document.getElementById('filterDateTo').value=dates[dates.length-1]||'';
+  const dfEl = document.getElementById('filterDateFrom');
+  const dtEl = document.getElementById('filterDateTo');
+  if(dfEl) dfEl.value=dates[0]||'';
+  if(dtEl) dtEl.value=dates[dates.length-1]||'';
+  
   const drEl = document.getElementById('headerDateRange');
   if (drEl) drEl.textContent=(dates[0]||'')+' ~ '+(dates[dates.length-1]||'');
   
@@ -976,13 +953,12 @@ function showDashboard() {
   updateStoreFilter();
   
   buildMultiSelect('msGubun',['추천','중립','비추천'],applyFilters);
-  document.getElementById('filterDateFrom').onchange=applyFilters;
-  document.getElementById('filterDateTo').onchange=applyFilters;
+  if(dfEl) dfEl.onchange=applyFilters;
+  if(dtEl) dtEl.onchange=applyFilters;
   
   renderTeamScoreboard();
   renderTopSection(); applyFilters(); renderNotices(); renderBoard();
-  // renderTab6은 applyFilters()가 120ms 후 S.filteredData를 채운 뒤 호출하므로 여기서 제거
-  // (빈 데이터로 Chart.js를 초기화하면 hidden 캔버스에서 textContent null 오류 발생)
+  renderTab6();
 }
 
 function onTeamChange(){ updateAgencyFilter(); updateStoreFilter(); applyFilters(); renderTeamScoreboard(); }
@@ -1007,7 +983,6 @@ function updateStoreFilter(){
   buildMultiSelect('msStore', stores, applyFilters);
 }
 
-// ── TEAM SCOREBOARD (GAUGES) ──
 function renderTeamScoreboard() {
   const container = document.getElementById('teamScoreboard');
   if (!container) return;
@@ -1046,10 +1021,6 @@ function renderGaugeItem(label, nps, target) {
   const val = nps === '-' ? 0 : Number(nps);
   const color = (val < target) ? '#D32F2F' : '#1A8A4A';
   const displayVal = nps === '-' ? '-' : nps.toFixed(1);
-  const rotation = -90; // Half circle
-  const circumference = 180;
-  
-  // Using pure HTML/CSS for small gauges to avoid heavy Chart.js overhead for 12+ gauges
   return `
     <div class="gauge-item">
       <div class="label">${label}</div>
@@ -1066,19 +1037,24 @@ function renderGaugeItem(label, nps, target) {
 }
 let _fd;function applyFilters(){clearTimeout(_fd);_fd=setTimeout(()=>{S.filteredData=getFilteredData();updateFilterSummary();renderTeamScoreboard();renderTopSection();renderTab1();renderTab2();renderDetail();renderTab6();if(S.role==='admin')renderTab7();},120);}
 function resetFilters(){
-  document.getElementById('globalSearch').value='';
-  document.getElementById('filterDateFrom').value=S.rawData.map(d=>d._bizDate).filter(Boolean).sort()[0]||'';
-  document.getElementById('filterDateTo').value=S.rawData.map(d=>d._bizDate).filter(Boolean).sort().pop()||'';
+  const gsEl = document.getElementById('globalSearch'); if(gsEl) gsEl.value='';
+  const dates = S.rawData.map(d=>d._bizDate).filter(Boolean).sort();
+  const dfEl = document.getElementById('filterDateFrom'); if(dfEl) dfEl.value=dates[0]||'';
+  const dtEl = document.getElementById('filterDateTo'); if(dtEl) dtEl.value=dates[dates.length-1]||'';
   msReset('msTeam');msReset('msAgency');msReset('msStore');msReset('msGubun');
   updateAgencyFilter();updateStoreFilter();applyFilters();
 }
 function msReset(id){const w=document.getElementById(id);if(w)w.querySelectorAll('.ms-option input').forEach(c=>c.checked=true);updMs(w);}
 function updateFilterSummary(){
-  const el=document.getElementById('filterSummary'),parts=[];
+  const el=document.getElementById('filterSummary');
+  if(!el) return;
+  const parts=[];
   const ag=getMultiSelectValues('msAgency');if(ag.length&&ag.length<S.allAgencies.length)parts.push('대리점:'+ag.length+'개');
   const st=getMultiSelectValues('msStore'),allSt=getMultiSelectOptions('msStore');if(st.length&&st.length<allSt.length)parts.push('매장:'+st.length+'개');
   const g=getMultiSelectValues('msGubun');if(g.length&&g.length<3)parts.push('구분:'+g.join(','));
-  const df=document.getElementById('filterDateFrom').value,dt=document.getElementById('filterDateTo').value;if(df||dt)parts.push('기간:'+(df||'')+' ~ '+(dt||''));
+  const dfEl=document.getElementById('filterDateFrom'), dtEl=document.getElementById('filterDateTo');
+  const df=dfEl?dfEl.value:'', dt=dtEl?dtEl.value:'';
+  if(df||dt)parts.push('기간:'+(df||'')+' ~ '+(dt||''));
   if(parts.length){el.classList.remove('hidden');el.innerHTML='<strong>적용 필터:</strong> '+parts.map(p=>`<span class="filter-tag">${p}</span>`).join('')+` <span style="margin-left:auto;color:var(--text-muted);font-size:10px">${S.filteredData.length}건</span>`;}else el.classList.add('hidden');
 }
 
@@ -1097,14 +1073,30 @@ function renderTopSection() {
   const st=Object.values(stMap).map(a=>({name:a.name,npsAll:calcNPS(a.all),npsSale:calcNPS(a.sale),npsNonsale:calcNPS(a.nonsale)}));
   const sH=(arr,k)=>arr.filter(a=>a[k].total>=1).sort((a,b)=>(b[k].nps-a[k].nps)||(b[k].total-a[k].total));
   const sL=(arr,k)=>arr.filter(a=>a[k].total>=1).sort((a,b)=>(a[k].nps-b[k].nps)||(b[k].total-a[k].total));
-  document.getElementById('topExcellent').innerHTML=
+  
+  const topExc = document.getElementById('topExcellent');
+  if(topExc) topExc.innerHTML=
     rc('🏅 종합 상위5 대리점',sH(ag,'npsAll').slice(0,5),'npsAll',1)+rc('💼 판매성 상위5 대리점',sH(ag,'npsSale').slice(0,5),'npsSale',1)+rc('📞 비판매성 상위5 대리점',sH(ag,'npsNonsale').slice(0,5),'npsNonsale',1)+
     rc('🏅 종합 상위10 매장',sH(st,'npsAll').slice(0,10),'npsAll',1)+rc('💼 판매성 상위10 매장',sH(st,'npsSale').slice(0,10),'npsSale',1)+rc('📞 비판매성 상위10 매장',sH(st,'npsNonsale').slice(0,10),'npsNonsale',1);
-  document.getElementById('topPoor').innerHTML=
+  
+  const topPoor = document.getElementById('topPoor');
+  if(topPoor) topPoor.innerHTML=
     rc('⚠️ 종합 하위5 대리점',sL(ag,'npsAll').slice(0,5),'npsAll',0)+rc('⚠️ 비판매성 하위5 대리점',sL(ag,'npsNonsale').slice(0,5),'npsNonsale',0)+'<div></div>'+
     rc('⚠️ 종합 하위10 매장',sL(st,'npsAll').slice(0,10),'npsAll',0)+rc('⚠️ 비판매성 하위10 매장',sL(st,'npsNonsale').slice(0,10),'npsNonsale',0)+'<div></div>';
+  
   const evalDates=data.map(d=>d._evalDate).filter(Boolean).sort(),last=evalDates[evalDates.length-1];
-  if(last){const neg=data.filter(d=>d._evalDate===last&&(d._gubun==='비추천'||d._gubun==='중립'));if(neg.length){document.getElementById('todayAlert').classList.remove('hidden');document.getElementById('todayAlertChips').innerHTML=neg.map(d=>{const reason=String(d['추천사유']||d._reason||'').trim()||'사유없음';return`<div class="alert-chip ${d._gubun==='비추천'?'detract':'neutral'}">${d._gubun==='비추천'?'👎':'😐'} ${d._store} (${d._gubun} / ${d._bizType} / ${reason})</div>`;}).join('');}}
+  if(last){
+    const neg=data.filter(d=>d._evalDate===last&&(d._gubun==='비추천'||d._gubun==='중립'));
+    const tAlert = document.getElementById('todayAlert');
+    const tChips = document.getElementById('todayAlertChips');
+    if(neg.length){
+      if(tAlert) tAlert.classList.remove('hidden');
+      if(tChips) tChips.innerHTML=neg.map(d=>{const reason=String(d['추천사유']||d._reason||'').trim()||'사유없음';return`<div class="alert-chip ${d._gubun==='비추천'?'detract':'neutral'}">${d._gubun==='비추천'?'👎':'😐'} ${d._store} (${d._gubun} / ${d._bizType} / ${reason})</div>`;}).join('');
+    } else {
+      if(tAlert) tAlert.classList.add('hidden');
+      if(tChips) tChips.innerHTML='';
+    }
+  }
 }
 function rc(title,items,key,isH){
   const list=items.map((it,i)=>{const nps=it[key],r=i<3?'rank-'+(i+1):'rank-other',s=isH?'high':'low',e=isH?(i<3?['🥇','🥈','🥉'][i]:'✨'):(i<3?'🔻':'▼');return`<li><span class="rank-num ${r}">${i+1}</span><span style="margin-right:2px">${e}</span><span class="rank-name" title="${it.name}">${it.name}</span><span class="rank-score ${s}">${nps.nps}</span><span class="rank-count">(${nps.total}건)</span></li>`;}).join('');
@@ -1116,23 +1108,27 @@ function rc(title,items,key,isH){
    ═══════════════════════════════════════════ */
 function renderTab1(){
   const map={};S.filteredData.forEach(d=>{if(!map[d._agency])map[d._agency]={n:d._agency,a:[],s:[],ns:[]};map[d._agency].a.push(d);(d._npsType==='판매성'?map[d._agency].s:map[d._agency].ns).push(d);});
-  let rows=Object.values(map).map(a=>({name:a.n,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.ns)}));
+  let rows=Object.values(map).map(a=>({name:a.n,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.nonsale)}));
   if(S.tab1Sort.col)rows.sort((a,b)=>srt(a,b,S.tab1Sort));
   const si=c=>{const a=S.tab1Sort.col===c;return`<span style="font-size:10px;margin-left:4px;opacity:${a?1:.4}">${a?(S.tab1Sort.asc?'▲':'▼'):'↕'}</span>`;};
   let h=`<table class="data-table"><thead><tr><th onclick="s1('name')">대리점명${si('name')}</th><th onclick="s1('allNPS')">종합NPS${si('allNPS')}</th><th onclick="s1('allTotal')">건수${si('allTotal')}</th><th>추천/중립/비추천</th><th onclick="s1('saleNPS')">판매성NPS${si('saleNPS')}</th><th>판매성건수</th><th onclick="s1('nonsaleNPS')">비판매성NPS${si('nonsaleNPS')}</th><th>비판매성건수</th><th>자세히</th></tr></thead><tbody>`;
   rows.forEach(r=>{h+=`<tr><td style="text-align:left;font-weight:600">${r.name}</td><td>${scoreHTML(r.allNPS.nps)}</td><td>${r.allNPS.total}</td><td style="font-size:11px">${r.allNPS.p}/${r.allNPS.n}/${r.allNPS.d}</td><td>${scoreHTML(r.saleNPS.nps)}</td><td>${r.saleNPS.total}</td><td>${scoreHTML(r.nonsaleNPS.nps)}</td><td>${r.nonsaleNPS.total}</td><td><button class="btn btn-sm btn-outline" onclick="showSD('agency','${r.name}')">자세히</button></td></tr>`;});
-  h+='</tbody></table>';document.getElementById('tab1Content').innerHTML=h;
+  h+='</tbody></table>';
+  const t1 = document.getElementById('tab1Content');
+  if(t1) t1.innerHTML=h;
 }
 function s1(c){if(S.tab1Sort.col===c)S.tab1Sort.asc=!S.tab1Sort.asc;else{S.tab1Sort.col=c;S.tab1Sort.asc=true;}renderTab1();}
 
 function renderTab2(){
   const map={};S.filteredData.forEach(d=>{if(!map[d._store])map[d._store]={n:d._store,ag:d._agency,a:[],s:[],ns:[]};map[d._store].a.push(d);(d._npsType==='판매성'?map[d._store].s:map[d._store].ns).push(d);});
-  let rows=Object.values(map).map(a=>({name:a.n,agency:a.ag,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.ns)}));
+  let rows=Object.values(map).map(a=>({name:a.n,agency:a.ag,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.nonsale)}));
   if(S.tab2Sort.col)rows.sort((a,b)=>srt(a,b,S.tab2Sort));
   const si=c=>{const a=S.tab2Sort.col===c;return`<span style="font-size:10px;margin-left:4px;opacity:${a?1:.4}">${a?(S.tab2Sort.asc?'▲':'▼'):'↕'}</span>`;};
   let h=`<table class="data-table"><thead><tr><th onclick="s2('agency')">대리점${si('agency')}</th><th onclick="s2('name')">매장명${si('name')}</th><th onclick="s2('allNPS')">종합NPS${si('allNPS')}</th><th onclick="s2('allTotal')">건수${si('allTotal')}</th><th>추천/중립/비추천</th><th onclick="s2('saleNPS')">판매성${si('saleNPS')}</th><th>판매성건수</th><th onclick="s2('nonsaleNPS')">비판매성${si('nonsaleNPS')}</th><th>비판매성건수</th><th>자세히</th></tr></thead><tbody>`;
   rows.forEach(r=>{h+=`<tr><td style="text-align:left">${r.agency}</td><td style="text-align:left;font-weight:600">${r.name}</td><td>${scoreHTML(r.allNPS.nps)}</td><td>${r.allNPS.total}</td><td style="font-size:11px">${r.allNPS.p}/${r.allNPS.n}/${r.allNPS.d}</td><td>${scoreHTML(r.saleNPS.nps)}</td><td>${r.saleNPS.total}</td><td>${scoreHTML(r.nonsaleNPS.nps)}</td><td>${r.nonsaleNPS.total}</td><td><button class="btn btn-sm btn-outline" onclick="showSD('store','${r.name.replace(/'/g,"\\'")}')">자세히</button></td></tr>`;});
-  h+='</tbody></table>';document.getElementById('tab2Content').innerHTML=h;
+  h+='</tbody></table>';
+  const t2 = document.getElementById('tab2Content');
+  if(t2) t2.innerHTML=h;
 }
 function s2(c){if(S.tab2Sort.col===c)S.tab2Sort.asc=!S.tab2Sort.asc;else{S.tab2Sort.col=c;S.tab2Sort.asc=true;}renderTab2();}
 
@@ -1157,17 +1153,24 @@ function showSD(type,name){
   const tn=calcNPS(data);h+=`<tr style="font-weight:700;background:#F0F4F8"><td>합계</td><td>${scoreHTML(tn.nps)}</td><td>${tn.total}</td><td>${tn.p}</td><td>${tn.n}</td><td>${tn.d}</td></tr></tbody></table>`;
   const sdTitle = document.getElementById('subDetailTitle');
   if (sdTitle) sdTitle.textContent=name+' — 비판매성 자세히 보기';
-  document.getElementById('subDetailBody').innerHTML=h;
-  document.getElementById('subDetailOverlay').classList.remove('hidden');
+  const sdb = document.getElementById('subDetailBody');
+  if (sdb) sdb.innerHTML=h;
+  const sdo = document.getElementById('subDetailOverlay');
+  if (sdo) sdo.classList.remove('hidden');
 }
-function closeSubDetail(){document.getElementById('subDetailOverlay').classList.add('hidden');}
+function closeSubDetail(){
+  const sdo = document.getElementById('subDetailOverlay');
+  if(sdo) sdo.classList.add('hidden');
+}
 
 /* ═══════════════════════════════════════════
    TAB3
    ═══════════════════════════════════════════ */
 const DC=['대리점명','매장명','구분','업무유형','합계','처리직원','처리일','추천지수','추천사유','당사신뢰도','미신뢰사유','종합의견'],PS=50;
 function renderDetail(){
-  let data=S.filteredData;const q=(document.getElementById('detailSearch')?.value||'').trim().toLowerCase();
+  let data=S.filteredData;
+  const dsEl = document.getElementById('detailSearch');
+  const q=(dsEl?.value||'').trim().toLowerCase();
   if(q)data=data.filter(d=>DC.some(c=>String(d[c]).toLowerCase().includes(q)));
   if(S.detailSort.col){data=[...data].sort((a,b)=>{const va=String(a[S.detailSort.col]||''),vb=String(b[S.detailSort.col]||''),na=Number(va),nb=Number(vb);if(!isNaN(na)&&!isNaN(nb))return S.detailSort.asc?na-nb:nb-na;return S.detailSort.asc?va.localeCompare(vb):vb.localeCompare(va);});}
   const tp=Math.max(1,Math.ceil(data.length/PS));if(S.detailPage>tp)S.detailPage=tp;
@@ -1177,86 +1180,165 @@ function renderDetail(){
   DC.forEach(c=>{h+=`<th onclick="sd('${c}')" style="font-size:11px">${c}${si(c)}</th>`;});
   h+='</tr></thead><tbody>';
   pd.forEach(d=>{h+='<tr>';DC.forEach(c=>{let v=d[c]!==undefined?d[c]:'';if(c==='구분'){const cl=v==='추천'?'score-high':v==='비추천'?'score-low':'score-mid';v=`<span class="score-cell ${cl}" style="font-size:11px">${v}</span>`;}h+=`<td style="font-size:11px;${['추천사유','종합의견','미신뢰사유'].includes(c)?'text-align:left;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;':''}" title="${String(d[c]||'').replace(/"/g,'&quot;')}">${v}</td>`;});h+='</tr>';});
-  h+='</tbody></table></div>';document.getElementById('tab3Content').innerHTML=h;
+  h+='</tbody></table></div>';
+  
+  const t3 = document.getElementById('tab3Content');
+  if(t3) t3.innerHTML=h;
+  
   let pg=`<button ${S.detailPage<=1?'disabled':''} onclick="S.detailPage=1;renderDetail()">«</button><button ${S.detailPage<=1?'disabled':''} onclick="S.detailPage--;renderDetail()">‹</button>`;
   let ps=Math.max(1,S.detailPage-3),pe=Math.min(tp,ps+6);if(pe-ps<6)ps=Math.max(1,pe-6);
   for(let p=ps;p<=pe;p++)pg+=`<button class="${p===S.detailPage?'active':''}" onclick="S.detailPage=${p};renderDetail()">${p}</button>`;
   pg+=`<button ${S.detailPage>=tp?'disabled':''} onclick="S.detailPage++;renderDetail()">›</button><button ${S.detailPage>=tp?'disabled':''} onclick="S.detailPage=${tp};renderDetail()">»</button>`;
-  document.getElementById('tab3Pagination').innerHTML=pg;
+  
+  const t3p = document.getElementById('tab3Pagination');
+  if(t3p) t3p.innerHTML=pg;
 }
 function sd(c){if(S.detailSort.col===c)S.detailSort.asc=!S.detailSort.asc;else{S.detailSort.col=c;S.detailSort.asc=true;}S.detailPage=1;renderDetail();}
 const debouncedRenderDetail=(()=>{let t;return()=>{clearTimeout(t);t=setTimeout(renderDetail,300);};})();
 
 /* ═══════════════════════════════════════════
-   TAB4 NOTICES (파일첨부 지원)
+   TAB4 NOTICES (다중 파일첨부 / 편집 지원)
    ═══════════════════════════════════════════ */
 function renderNotices(){
-  const el=document.getElementById('noticeList');document.getElementById('noticeDetail').classList.add('hidden');document.getElementById('noticeForm').classList.add('hidden');el.classList.remove('hidden');
+  const el=document.getElementById('noticeList');
+  const nd=document.getElementById('noticeDetail');
+  const nf=document.getElementById('noticeForm');
+  if(nd) nd.classList.add('hidden');
+  if(nf) nf.classList.add('hidden');
+  if(!el) return;
+  el.classList.remove('hidden');
   if(!S.notices.length){el.innerHTML='<div style="padding:40px;text-align:center;color:var(--text-muted)">등록된 공지사항이 없습니다.</div>';return;}
-  el.innerHTML=S.notices.map((n,i)=>`<div class="notice-item" onclick="viewNotice(${i})"><span class="no">${S.notices.length-i}</span><span class="title">${n.title}${n.fileName?' 📎':''}</span><span class="views">👁 ${n.views||0}</span><span class="date">${n.date}</span></div>`).join('');
+  
+  el.innerHTML=S.notices.map((n,i)=>{
+    const hasFiles = (n.files && n.files.length > 0) || n.fileName;
+    return `<div class="notice-item" onclick="viewNotice(${i})"><span class="no">${S.notices.length-i}</span><span class="title">${n.title}${hasFiles?' 📎':''}</span><span class="views">👁 ${n.views||0}</span><span class="date">${n.date}</span></div>`;
+  }).join('');
 }
+
 async function viewNotice(i){
-  const n=S.notices[i];if(S.role==='user'){n.views=(n.views||0)+1;try{await syncToServer();}catch(e){}}
-  document.getElementById('noticeList').classList.add('hidden');const el=document.getElementById('noticeDetail');el.classList.remove('hidden');
-  let fileHTML='';
-  if(n.fileName&&n.fileData){
-    fileHTML=`<div style="margin-top:14px;padding:12px;background:#F0F4F8;border-radius:8px"><span style="font-size:12px;font-weight:600">📎 첨부파일:</span> <a href="${n.fileData}" download="${n.fileName}" style="color:var(--primary);font-size:12px;font-weight:500;text-decoration:underline;margin-left:6px">${n.fileName}</a></div>`;
-  } else if(n.fileName){
-    fileHTML=`<div style="margin-top:14px;padding:12px;background:#F0F4F8;border-radius:8px"><span style="font-size:12px">📎 ${n.fileName} (파일 크기 초과로 서버 미저장)</span></div>`;
+  const n=S.notices[i];
+  if(S.role==='user'){n.views=(n.views||0)+1;try{await syncToServer();}catch(e){}}
+  const nl = document.getElementById('noticeList'); if(nl) nl.classList.add('hidden');
+  const el=document.getElementById('noticeDetail'); 
+  if(!el) return;
+  el.classList.remove('hidden');
+  
+  // 레거시 첨부파일과 신규 다중 첨부파일 지원
+  let filesToRender = n.files || [];
+  if (n.fileName && n.fileData && filesToRender.length === 0) {
+    filesToRender.push({ fileName: n.fileName, fileData: n.fileData });
   }
-  el.innerHTML=`<div style="padding:20px"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:16px">${n.title}</h3><button class="btn btn-sm btn-outline" onclick="renderNotices()">← 목록</button></div><div style="color:var(--text-muted);font-size:12px;margin:14px 0;padding-bottom:14px;border-bottom:1px solid var(--border)">${n.date} · 조회 ${n.views||0}회</div><div style="font-size:13px;line-height:1.8;white-space:pre-wrap">${n.content}</div>${fileHTML}${S.role==='admin'?`<div style="margin-top:16px"><button class="btn btn-sm btn-danger" onclick="deleteNotice(${i})">삭제</button></div>`:''}</div>`;
-}
-function showNoticeForm(){
-  document.getElementById('noticeList').classList.add('hidden');
-  const el=document.getElementById('noticeForm');el.classList.remove('hidden');
-  el.innerHTML=`<div class="board-form">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h3>공지 작성</h3><button class="btn btn-sm btn-outline" onclick="renderNotices()">← 목록</button></div>
-    <div class="form-row"><label>제목</label><input type="text" id="noticeTitle"></div>
-    <div class="form-row"><label>내용</label><textarea id="noticeContent" style="height:200px"></textarea></div>
-    <div class="form-row"><label>첨부파일 (엑셀/워드/PDF/이미지)</label><input type="file" id="noticeFile" accept=".xlsx,.xls,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.bmp"></div>
-    <button class="btn btn-primary" onclick="saveNotice()">등록</button>
+  
+  let fileHTML = '';
+  if (filesToRender.length > 0) {
+    fileHTML = `<div style="margin-top:14px;padding:12px;background:#F0F4F8;border-radius:8px">
+      <span style="font-size:12px;font-weight:600">📎 첨부파일 (${filesToRender.length}개):</span>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+        ${filesToRender.map(f => `<a href="${f.fileData}" download="${f.fileName}" style="color:var(--primary);font-size:12px;font-weight:500;text-decoration:underline;">${f.fileName}</a>`).join('')}
+      </div>
+    </div>`;
+  } else if (n.fileName) {
+     fileHTML = `<div style="margin-top:14px;padding:12px;background:#F0F4F8;border-radius:8px"><span style="font-size:12px;color:var(--text-muted);">📎 ${n.fileName} (용량 초과로 미저장된 파일)</span></div>`;
+  }
+  
+  el.innerHTML=`<div style="padding:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="font-size:16px">${n.title}</h3><button class="btn btn-sm btn-outline" onclick="renderNotices()">← 목록</button>
+    </div>
+    <div style="color:var(--text-muted);font-size:12px;margin:14px 0;padding-bottom:14px;border-bottom:1px solid var(--border)">${n.date} · 조회 ${n.views||0}회</div>
+    <div style="font-size:13px;line-height:1.8;white-space:pre-wrap">${n.content}</div>
+    ${fileHTML}
+    ${S.role==='admin'?`<div style="margin-top:16px"><button class="btn btn-sm btn-outline" onclick="editNotice(${i})" style="margin-right:8px">수정</button><button class="btn btn-sm btn-danger" onclick="deleteNotice(${i})">삭제</button></div>`:''}
   </div>`;
 }
+
+function showNoticeForm(){
+  const nl = document.getElementById('noticeList'); if(nl) nl.classList.add('hidden');
+  const nd = document.getElementById('noticeDetail'); if(nd) nd.classList.add('hidden');
+  const el = document.getElementById('noticeForm'); if(!el) return;
+  el.classList.remove('hidden');
+  el.innerHTML=`<div class="board-form">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h3>공지 작성</h3><button class="btn btn-sm btn-outline" onclick="renderNotices()">← 목록</button></div>
+    <input type="hidden" id="editNoticeIdx" value="-1">
+    <div class="form-row"><label>제목</label><input type="text" id="noticeTitle"></div>
+    <div class="form-row"><label>내용</label><textarea id="noticeContent" style="height:200px"></textarea></div>
+    <div class="form-row">
+      <label>첨부파일 (다중 선택 가능, 여러 개 선택 시 드래그하거나 Ctrl 클릭)</label>
+      <input type="file" id="noticeFile" multiple accept=".xlsx,.xls,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.bmp">
+      <div id="noticeFileHelp" style="font-size:11px;color:var(--text-muted);margin-top:4px;"></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveNotice()">저장하기</button>
+  </div>`;
+}
+
+function editNotice(i) {
+  const n = S.notices[i];
+  showNoticeForm();
+  document.getElementById('editNoticeIdx').value = i;
+  document.getElementById('noticeTitle').value = n.title;
+  document.getElementById('noticeContent').value = n.content;
+  document.getElementById('noticeFileHelp').textContent = "※ 파일 선택 시 기존 첨부파일은 모두 삭제되고 새로 선택한 파일로 덮어쓰기 됩니다. 선택하지 않으면 기존 첨부파일이 유지됩니다.";
+}
+
 async function saveNotice(){
-  const t=document.getElementById('noticeTitle').value.trim();
-  const c=document.getElementById('noticeContent').value.trim();
-  const fi=document.getElementById('noticeFile');
+  const ntEl = document.getElementById('noticeTitle');
+  const ncEl = document.getElementById('noticeContent');
+  const fi = document.getElementById('noticeFile');
+  const editIdxEl = document.getElementById('editNoticeIdx');
+  
+  const t = ntEl ? ntEl.value.trim() : '';
+  const c = ncEl ? ncEl.value.trim() : '';
+  const editIdx = editIdxEl ? parseInt(editIdxEl.value) : -1;
+  
   if(!t){alert('제목을 입력하세요.');return;}
 
-  const notice={title:t,content:c,date:new Date().toISOString().slice(0,10),views:0,fileName:'',fileData:null};
-
-  if(fi.files.length){
-    const file=fi.files[0];
-    notice.fileName=file.name;
-    // 파일을 base64로 변환 (npoint 용량 고려 500KB 이하만)
-    if(file.size<=500*1024){
-      const reader=new FileReader();
-      reader.onload=async e=>{
-        notice.fileData=e.target.result;
-        S.notices.unshift(notice);
-        showLoading('공지 저장 중...');
-        try{await syncToServer();}catch(e){alert('저장 실패:'+e.message);}
-        hideLoading();renderNotices();
-      };
-      reader.readAsDataURL(file);
-      return;
-    } else {
-      notice.fileName=file.name+' (용량초과-미저장)';
-      alert('파일 크기가 500KB를 초과하여 서버에 저장되지 않습니다. 공지 텍스트는 정상 등록됩니다.');
+  let newFiles = [];
+  if (fi && fi.files.length) {
+    showLoading('파일 변환 중...');
+    for (let file of fi.files) {
+      if (file.size > 500 * 1024) {
+        alert(`[${file.name}] 파일이 500KB를 초과하여 미저장됩니다.`);
+        continue;
+      }
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+      newFiles.push({ fileName: file.name, fileData: base64 });
     }
   }
-  S.notices.unshift(notice);
-  showLoading('공지 저장 중...');
-  try{await syncToServer();}catch(e){alert('저장 실패:'+e.message);}
-  hideLoading();renderNotices();
+
+  if (editIdx >= 0) {
+    S.notices[editIdx].title = t;
+    S.notices[editIdx].content = c;
+    if (fi && fi.files.length > 0) {
+      S.notices[editIdx].files = newFiles; 
+      S.notices[editIdx].fileName = ''; 
+      S.notices[editIdx].fileData = null;
+    }
+  } else {
+    S.notices.unshift({
+      title: t, content: c, date: new Date().toISOString().slice(0,10), views: 0, files: newFiles, fileName: '', fileData: null
+    });
+  }
+
+  showLoading('서버 반영 중...');
+  try { await syncToServer(); } catch(e) { alert('실패:'+e.message); }
+  hideLoading();
+  renderNotices();
 }
+
 async function deleteNotice(i){if(!confirm('삭제하시겠습니까?'))return;S.notices.splice(i,1);showLoading('삭제 중...');try{await syncToServer();}catch(e){}hideLoading();renderNotices();}
 
 /* ═══════════════════════════════════════════
    TAB5 BOARD
    ═══════════════════════════════════════════ */
 function renderBoard(){
-  const el=document.getElementById('boardList');document.getElementById('boardForm').classList.add('hidden');
+  const el=document.getElementById('boardList');
+  const bf=document.getElementById('boardForm');
+  if(bf) bf.classList.add('hidden');
+  if(!el) return;
   if(!S.boardItems.length){el.innerHTML='<div style="padding:40px;text-align:center;color:var(--text-muted)">등록된 소명이 없습니다.</div>';return;}
   let h=`<table class="data-table"><thead><tr><th>No</th><th>대리점명</th><th>매장명</th><th>첨부파일</th><th>등록일</th>${S.role==='admin'?'<th>다운로드</th><th>삭제</th>':''}</tr></thead><tbody>`;
   S.boardItems.forEach((b,i)=>{
@@ -1281,50 +1363,66 @@ function downloadBoardFile(idx){
   document.body.removeChild(a);
 }
 function showBoardForm(){
-  document.getElementById('boardForm').classList.remove('hidden');
-  document.getElementById('boardForm').innerHTML=`<div class="board-form" style="background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius)"><h4 style="margin-bottom:12px">소명 제출</h4><div class="form-row"><label>대리점명</label><select id="boardAgency" onchange="updBoardStores()">${S.allAgencies.map(a=>`<option>${a}</option>`).join('')}</select></div><div class="form-row"><label>매장명</label><select id="boardStore"></select></div><div class="form-row"><label>소명 파일 (엑셀/워드/PDF/이미지)</label><input type="file" id="boardFile" accept=".xlsx,.xls,.doc,.docx,.pdf,.png,.jpg,.jpeg"></div><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="submitBoard()">제출</button><button class="btn btn-outline" onclick="document.getElementById('boardForm').classList.add('hidden')">취소</button></div></div>`;
+  const el = document.getElementById('boardForm');
+  if(!el) return;
+  el.classList.remove('hidden');
+  el.innerHTML=`<div class="board-form" style="background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius)"><h4 style="margin-bottom:12px">소명 제출</h4><div class="form-row"><label>대리점명</label><select id="boardAgency" onchange="updBoardStores()">${S.allAgencies.map(a=>`<option>${a}</option>`).join('')}</select></div><div class="form-row"><label>매장명</label><select id="boardStore"></select></div><div class="form-row"><label>소명 파일 (엑셀/워드/PDF/이미지)</label><input type="file" id="boardFile" accept=".xlsx,.xls,.doc,.docx,.pdf,.png,.jpg,.jpeg"></div><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="submitBoard()">제출</button><button class="btn btn-outline" onclick="document.getElementById('boardForm').classList.add('hidden')">취소</button></div></div>`;
   updBoardStores();
 }
-function updBoardStores(){const ag=document.getElementById('boardAgency').value;document.getElementById('boardStore').innerHTML=[...new Set(S.rawData.filter(d=>d._agency===ag).map(d=>d._store))].sort().map(s=>`<option>${s}</option>`).join('');}
+function updBoardStores(){
+  const bag=document.getElementById('boardAgency');
+  const bst=document.getElementById('boardStore');
+  if(!bag || !bst) return;
+  const ag=bag.value;
+  bst.innerHTML=[...new Set(S.rawData.filter(d=>d._agency===ag).map(d=>d._store))].sort().map(s=>`<option>${s}</option>`).join('');
+}
 async function submitBoard(){
-  const ag=document.getElementById('boardAgency').value,st=document.getElementById('boardStore').value,fi=document.getElementById('boardFile');
+  const agEl=document.getElementById('boardAgency'), stEl=document.getElementById('boardStore'), fi=document.getElementById('boardFile');
+  const ag=agEl?agEl.value:'', st=stEl?stEl.value:'';
   if(!ag||!st){alert('대리점과 매장을 선택하세요.');return;}
   const item={agency:ag,store:st,date:new Date().toISOString().slice(0,10),fileName:'',fileData:null};
-  if(fi.files.length){
+  
+  const bf = document.getElementById('boardForm');
+  
+  if(fi && fi.files.length){
     const file=fi.files[0];
     item.fileName=file.name;
     if(file.size>500*1024){
       alert('파일 크기가 500KB를 초과합니다. 파일명만 기록되고 파일은 서버에 저장되지 않습니다.');
       item.fileData=null;
       S.boardItems.unshift(item);
-      showLoading('소명 제출 중...');try{await syncToServer();}catch(e){alert('실패:'+e.message);}hideLoading();renderBoard();document.getElementById('boardForm').classList.add('hidden');alert('소명이 제출되었습니다 (파일 미저장).');
+      showLoading('소명 제출 중...');try{await syncToServer();}catch(e){alert('실패:'+e.message);}hideLoading();renderBoard();
+      if(bf) bf.classList.add('hidden');
+      alert('소명이 제출되었습니다 (파일 미저장).');
       return;
     }
-    // base64로 읽기
     const reader=new FileReader();
     reader.onload=async e=>{
       item.fileData=e.target.result;
       S.boardItems.unshift(item);
       showLoading('소명 제출 중...');
       try{await syncToServer();}catch(err){alert('실패:'+err.message);}
-      hideLoading();renderBoard();document.getElementById('boardForm').classList.add('hidden');alert('소명이 제출되었습니다.');
+      hideLoading();renderBoard();
+      if(bf) bf.classList.add('hidden');
+      alert('소명이 제출되었습니다.');
     };
     reader.readAsDataURL(file);
     return;
   }
-  // 파일 없이 제출
   S.boardItems.unshift(item);
-  showLoading('소명 제출 중...');try{await syncToServer();}catch(e){alert('실패:'+e.message);}hideLoading();renderBoard();document.getElementById('boardForm').classList.add('hidden');alert('소명이 제출되었습니다 (파일 미첨부).');
+  showLoading('소명 제출 중...');try{await syncToServer();}catch(e){alert('실패:'+e.message);}hideLoading();renderBoard();
+  if(bf) bf.classList.add('hidden');
+  alert('소명이 제출되었습니다 (파일 미첨부).');
 }
 async function deleteBoardItem(i){if(!confirm('삭제?'))return;S.boardItems.splice(i,1);showLoading('삭제 중...');try{await syncToServer();}catch(e){}hideLoading();renderBoard();}
 
 /* ═══════════════════════════════════════════
    TABS NAV / CAPTURE / UTIL
    ═══════════════════════════════════════════ */
-document.querySelectorAll('.tab-btn').forEach(btn=>{btn.onclick=()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById(btn.dataset.tab).classList.add('active');};});
+document.querySelectorAll('.tab-btn').forEach(btn=>{btn.onclick=()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));btn.classList.add('active');const target = document.getElementById(btn.dataset.tab); if(target) target.classList.add('active');};});
 function captureTab(id){
   const el=document.getElementById(id);
-  // 스크롤 영역 전체를 캡쳐하기 위해 임시로 max-height 제거
+  if(!el) return;
   const scrollEls=el.querySelectorAll('.table-scroll');
   const origStyles=[];
   scrollEls.forEach(s=>{origStyles.push(s.style.maxHeight);s.style.maxHeight='none';});
@@ -1361,7 +1459,6 @@ let _agencyChartPage=0;
 const AGENCY_PER_PAGE=4;
 
 function renderTab6(){
-  if (!S.rawData.length) return; // 데이터가 없으면 차트 렌더링 건너뜀
   renderTeamDailyChart();
   renderAgencyDailyCharts();
 }
@@ -1401,7 +1498,7 @@ function renderTeamDailyChart(){
 function renderAgencyDailyCharts(){
   const area=document.getElementById('agencyChartsArea');
   const pgArea=document.getElementById('agencyChartPagination');
-  if(!area||!pgArea)return;
+  if(!area)return;
 
   const agSel=getMultiSelectValues('msAgency');
   let agencies;
@@ -1409,14 +1506,16 @@ function renderAgencyDailyCharts(){
   else{agencies=[...S.allAgencies].sort();}
 
   const totalPages=Math.max(1,Math.ceil(agencies.length/AGENCY_PER_PAGE));
-  if(_agencyChartPage>=totalPages)_agencyChartPage=totalPages-1;
+  if(_agencyChartPage>=totalPages)_agencyChartPage=Math.max(0, totalPages-1);
   const startIdx=_agencyChartPage*AGENCY_PER_PAGE;
   const pageAgencies=agencies.slice(startIdx,startIdx+AGENCY_PER_PAGE);
 
-  let pgHTML=`<span style="font-size:11px;color:var(--text-muted)">${agencies.length}개 대리점 (${_agencyChartPage+1}/${totalPages})</span>`;
-  pgHTML+=`<button class="btn btn-sm btn-outline" ${_agencyChartPage<=0?'disabled':''} onclick="_agencyChartPage--;renderAgencyDailyCharts()">◀ 이전</button>`;
-  pgHTML+=`<button class="btn btn-sm btn-outline" ${_agencyChartPage>=totalPages-1?'disabled':''} onclick="_agencyChartPage++;renderAgencyDailyCharts()">다음 ▶</button>`;
-  pgArea.innerHTML=pgHTML;
+  if(pgArea){
+    let pgHTML=`<span style="font-size:11px;color:var(--text-muted)">${agencies.length}개 대리점 (${_agencyChartPage+1}/${totalPages})</span>`;
+    pgHTML+=`<button class="btn btn-sm btn-outline" ${_agencyChartPage<=0?'disabled':''} onclick="_agencyChartPage--;renderAgencyDailyCharts()">◀ 이전</button>`;
+    pgHTML+=`<button class="btn btn-sm btn-outline" ${_agencyChartPage>=totalPages-1?'disabled':''} onclick="_agencyChartPage++;renderAgencyDailyCharts()">다음 ▶</button>`;
+    pgArea.innerHTML=pgHTML;
+  }
 
   _agencyCharts.forEach(c=>c.destroy());
   _agencyCharts=[];
@@ -1433,11 +1532,9 @@ function renderAgencyDailyCharts(){
     if(chartObj)_agencyCharts.push(chartObj);
   });
 
-  // 관리자 전용: 부진 대리점
   if(S.role==='admin') renderWeakAgencyCharts();
 }
 
-// 대리점 차트 빌드 공용 함수
 function buildAgencyChartOnCanvas(canvasId,agencyName,dataSource,opts){
   const agData=dataSource.filter(d=>d._agency===agencyName);
   const dateMap={};
@@ -1466,27 +1563,29 @@ function buildAgencyChartOnCanvas(canvasId,agencyName,dataSource,opts){
   });
 }
 
-// 차트 팝업
 let _popupChart=null;
 function openChartPopup(agencyName){
   const cpTitle = document.getElementById('chartPopupTitle');
   if (cpTitle) cpTitle.textContent=agencyName+' — 일별 NPS 변동추이';
-  document.getElementById('chartPopupOverlay').classList.remove('hidden');
-  // 기존 차트 파기
+  const overlay = document.getElementById('chartPopupOverlay');
+  if(overlay) overlay.classList.remove('hidden');
   if(_popupChart){_popupChart.destroy();_popupChart=null;}
-  // 캔버스 재생성 (크기 리셋)
   const body=document.getElementById('chartPopupBody');
-  body.innerHTML='<canvas id="chartPopupCanvas" height="100"></canvas>';
-  setTimeout(()=>{
-    _popupChart=buildAgencyChartOnCanvas('chartPopupCanvas',agencyName,S.filteredData,{legendSize:13,pointR:5,borderW:3,yMin:30,tickSize:12});
-  },100);
+  if(body) {
+    body.innerHTML='<canvas id="chartPopupCanvas" height="100"></canvas>';
+    setTimeout(()=>{
+      _popupChart=buildAgencyChartOnCanvas('chartPopupCanvas',agencyName,S.filteredData,{legendSize:13,pointR:5,borderW:3,yMin:30,tickSize:12});
+    },100);
+  }
 }
 function closeChartPopup(){
-  document.getElementById('chartPopupOverlay').classList.add('hidden');
+  const overlay = document.getElementById('chartPopupOverlay');
+  if(overlay) overlay.classList.add('hidden');
   if(_popupChart){_popupChart.destroy();_popupChart=null;}
 }
 function captureChartPopup(){
   const body=document.getElementById('chartPopupBody');
+  if(!body) return;
   showLoading('캡쳐 중...');
   html2canvas(body,{scale:2,backgroundColor:'#fff',useCORS:true}).then(c=>{
     const cpTitle = document.getElementById('chartPopupTitle');
@@ -1495,7 +1594,6 @@ function captureChartPopup(){
   }).catch(e=>{hideLoading();alert('캡쳐 오류:'+e.message);});
 }
 
-// 관리자 전용: 최근 1주일 팀 평균 미만 대리점
 let _weakCharts=[];
 function renderWeakAgencyCharts(){
   const section=document.getElementById('weakAgencySection');
@@ -1505,7 +1603,6 @@ function renderWeakAgencyCharts(){
   _weakCharts.forEach(c=>c.destroy());
   _weakCharts=[];
 
-  // 최근 1주일 날짜 계산
   const allDates=S.rawData.map(d=>d._bizDate).filter(Boolean).sort();
   const lastDate=allDates[allDates.length-1];
   if(!lastDate){section.classList.add('hidden');return;}
@@ -1516,11 +1613,9 @@ function renderWeakAgencyCharts(){
   const recentData=S.rawData.filter(d=>d._bizDate>=weekAgoStr&&d._bizDate<=lastDate);
   if(!recentData.length){section.classList.add('hidden');return;}
 
-  // 팀 평균 종합NPS
   const teamNPS=calcNPS(recentData);
   if(teamNPS.nps==='-'){section.classList.add('hidden');return;}
 
-  // 대리점별 종합NPS
   const agMap={};
   recentData.forEach(d=>{
     if(!agMap[d._agency])agMap[d._agency]=[];
@@ -1554,9 +1649,6 @@ function renderWeakAgencyCharts(){
 /* ═══════════════════════════════════════════
    TAB7: 마케터 To-Do (관리자 전용)
    ═══════════════════════════════════════════ */
-/* ═══════════════════════════════════════════
-   TAB7: MARKETER TO-DO (COACHING GUIDE)
-   ═══════════════════════════════════════════ */
 function renderTab7() {
   const data = S.filteredData;
   const coachingArea = document.getElementById('todoCoachingContent');
@@ -1570,7 +1662,6 @@ function renderTab7() {
     return;
   }
 
-  // 1. 업무유형별 프리미엄 코칭 가이드
   const bizTypes = [...new Set(data.map(d => d._bizType))].filter(Boolean);
   const weakTypesSummary = bizTypes.map(type => {
     const typeData = data.filter(d => d._bizType === type);
@@ -1627,7 +1718,6 @@ function renderTab7() {
   }
   coachingArea.innerHTML = hCoaching;
 
-  // 2. 비판매성 부진항목 상세 현황 (매장별)
   const storeGroups = {};
   data.filter(d => d._npsType === '비판매성').forEach(d => {
     const key = `${d._agency}|${d._store}|${d._bizType}`;
@@ -1646,7 +1736,6 @@ function renderTab7() {
   if (weakItems.length === 0) {
     weakArea.innerHTML = '<div style="text-align:center; padding:40px; color:var(--success); border:1px dashed var(--border); border-radius:12px;">✨ 모든 매장의 비판매성 업무가 목표를 달성 중입니다.</div>';
   } else {
-    // 컬러 태그 시스템 (참조 대시보드 기준)
     const typeColors = { '기기변경': '#e84393', '부가요금제': '#fd79a8', '요금수납': '#1d6fcd', '명의변경': '#a29bfe', '번호변경': '#00b894', '부가서비스': '#f1c40f', '요금제변경': '#0891b2', '약정할인': '#059669' };
     const getTtag = (t) => `<span class="ttag" style="background:${typeColors[t] || '#636e72'}22; color:${typeColors[t] || '#636e72'}; font-weight:600; padding:2px 8px; border-radius:3px; font-size:11px;">${t}</span>`;
     
@@ -1774,55 +1863,89 @@ async function downloadTodoPDF(){
 }
 
 /* ═══════════════════════════════════════════
-   PWA & UTILS
+   PWA & UTILS & AUTO-SYNC
    ═══════════════════════════════════════════ */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'activated') document.getElementById('updateBanner').classList.remove('hidden');
+        if (newWorker.state === 'activated') {
+            const ub = document.getElementById('updateBanner');
+            if(ub) ub.classList.remove('hidden');
+        }
       });
     });
   }).catch(err => console.log('SW registration failed:', err));
 }
 
 let _lastUpdatedAt = localStorage.getItem('nps_lastUpdatedAt') || '';
+
+// 30초 간격으로 자동 동기화 체크
 async function checkForUpdates() {
   try {
     const data = await CLOUD.read();
+    if (!data) return;
     const serverUpdated = data.updatedAt || '';
-    if (_lastUpdatedAt && serverUpdated && serverUpdated !== _lastUpdatedAt) document.getElementById('updateBanner').classList.remove('hidden');
-    _lastUpdatedAt = serverUpdated;
-    localStorage.setItem('nps_lastUpdatedAt', serverUpdated);
+    if (_lastUpdatedAt && serverUpdated && serverUpdated !== _lastUpdatedAt) {
+        // 새 데이터 감지 시 백그라운드 자동 교체 후 화면 리렌더링
+        S.rawData = Array.isArray(data.npsData) ? data.npsData : S.rawData;
+        S.notices = Array.isArray(data.notices) ? data.notices : S.notices;
+        S.boardItems = Array.isArray(data.boardItems) ? data.boardItems : S.boardItems;
+        _lastUpdatedAt = serverUpdated;
+        localStorage.setItem('nps_lastUpdatedAt', serverUpdated);
+        
+        processData();
+        
+        // 현재 공지사항 탭을 보고 있으면 새로고침
+        const nl = document.getElementById('noticeList');
+        if(nl && !nl.classList.contains('hidden')) renderNotices();
+        
+        // 대시보드 새로고침 알림
+        const ub = document.getElementById('updateBanner');
+        if(ub) {
+            ub.querySelector('span').textContent = '🔔 실시간 데이터가 자동으로 업데이트 되었습니다.';
+            ub.classList.remove('hidden');
+            setTimeout(() => ub.classList.add('hidden'), 5000); 
+        }
+        applyFilters(); 
+    }
   } catch(e) {}
 }
+
 const _origInitApp = initApp;
 initApp = function() {
   _origInitApp();
   localStorage.setItem('nps_lastUpdatedAt', _lastUpdatedAt);
-  setInterval(checkForUpdates, 60000);
+  // 30초(30000ms) 단위로 줄여 빠른 실시간 동기화 지원
+  setInterval(checkForUpdates, 30000);
 };
 
 let _deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault(); _deferredPrompt = e;
-  if (!localStorage.getItem('nps_installDismissed')) document.getElementById('installPrompt').classList.remove('hidden');
+  if (!localStorage.getItem('nps_installDismissed')) {
+      const ip = document.getElementById('installPrompt');
+      if(ip) ip.classList.remove('hidden');
+  }
 });
 function installPWA() {
   if (!_deferredPrompt) return;
   _deferredPrompt.prompt();
   _deferredPrompt.userChoice.then(result => {
     _deferredPrompt = null;
-    document.getElementById('installPrompt').classList.add('hidden');
+    const ip = document.getElementById('installPrompt');
+    if(ip) ip.classList.add('hidden');
   });
 }
 function dismissInstall() {
-  document.getElementById('installPrompt').classList.add('hidden');
+  const ip = document.getElementById('installPrompt');
+  if(ip) ip.classList.add('hidden');
   localStorage.setItem('nps_installDismissed', '1');
 }
 window.addEventListener('appinstalled', () => {
-  document.getElementById('installPrompt').classList.add('hidden');
+  const ip = document.getElementById('installPrompt');
+  if(ip) ip.classList.add('hidden');
 });
 </script>
 </body>
