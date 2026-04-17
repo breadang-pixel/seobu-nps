@@ -361,12 +361,23 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
         <div class="tab-pane" id="tab3"><div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-sm btn-capture" onclick="captureTab('tab3')">📷 캡쳐하기</button></div><div class="search-bar"><input type="text" id="detailSearch" placeholder="매장명, 담당자, 업무유형 등 검색..." oninput="debouncedRenderDetail()"></div><div id="tab3Content"></div><div id="tab3Pagination" class="pagination"></div></div>
         <div class="tab-pane" id="tab4"><div id="noticeAdminBtn" class="hidden" style="text-align:right;margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="showNoticeForm()">✏️ 공지 작성</button></div><div id="noticeList"></div><div id="noticeDetail" class="hidden"></div><div id="noticeForm" class="hidden"></div></div>
         <div class="tab-pane" id="tab5"><div id="boardUserForm" class="hidden"><button class="btn btn-sm btn-primary" onclick="showBoardForm()" style="margin-bottom:12px">📎 소명 제출하기</button></div><div id="boardForm" class="hidden"></div><div id="boardList"></div></div>
+        
         <div class="tab-pane" id="tab6">
           <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-sm btn-capture" onclick="captureTab('tab6')">📷 캡쳐하기</button></div>
-          <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>📈 서광주팀 일별 NPS 변동추이</h3></div><div class="card-body"><canvas id="chartTeamDaily" height="80"></canvas></div></div>
-          <div id="weakAgencySection" class="card hidden" style="margin-bottom:16px;border-color:#FFCDD2"><div class="card-header" style="background:#FFF3E0"><h3>⚠️ 최근 1주일 팀 평균 미만 대리점 변동추이</h3></div><div class="card-body" id="weakAgencyChartsArea"></div></div>
-          <div class="card"><div class="card-header"><h3>📊 대리점별 일별 NPS 변동추이</h3><div id="agencyChartPagination" style="display:flex;gap:6px;align-items:center;margin-left:auto"></div></div><div class="card-body" id="agencyChartsArea"></div></div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-header"><h3>📈 팀별 일별 NPS 변동추이</h3></div>
+            <div class="card-body" id="teamChartsArea"></div>
+          </div>
+          <div id="weakAgencySection" class="card hidden" style="margin-bottom:16px;border-color:#FFCDD2">
+            <div class="card-header" style="background:#FFF3E0"><h3>⚠️ 최근 1주일 팀 전체 평균 미만 대리점 변동추이</h3></div>
+            <div class="card-body" id="weakAgencyChartsArea"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>📊 대리점별 일별 NPS 변동추이</h3><div id="agencyChartPagination" style="display:flex;gap:6px;align-items:center;margin-left:auto"></div></div>
+            <div class="card-body" id="agencyChartsArea"></div>
+          </div>
         </div>
+
         <div class="tab-pane" id="tab7">
             <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
                 <button class="btn btn-sm btn-danger" onclick="downloadTodoPDF()">📄 PDF 보고서 다운로드</button>
@@ -389,8 +400,8 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
     </div>
     
     <div id="topSection" class="hidden">
-      <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>🏆 월 누적 NPS 우수점 현황</h3></div><div class="card-body"><div class="top-section" id="topExcellent"></div></div></div>
-      <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>⚠️ 월 누적 NPS 부진점 현황</h3></div><div class="card-body"><div class="top-section" id="topPoor"></div></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>🏆 누적 데이터 우수점 현황</h3></div><div class="card-body"><div class="top-section" id="topExcellent"></div></div></div>
+      <div class="card" style="margin-bottom:16px"><div class="card-header"><h3>⚠️ 누적 데이터 부진점 현황</h3></div><div class="card-body"><div class="top-section" id="topPoor"></div></div></div>
     </div>
   </div>
 </div>
@@ -475,7 +486,6 @@ async function doLogin(role) {
     if (err) err.textContent = '';
     document.getElementById('loginOverlay')?.classList.add('hidden');
     
-    // Firebase 실시간 리스너 켜기
     setupRealtimeListener();
     hideLoading();
 
@@ -512,7 +522,6 @@ function initApp() {
   showDashboard();
 }
 
-// 🔥 핵심: Firebase 실시간 변경 감지 🔥
 function setupRealtimeListener() {
   db.ref('npsDashboard').on('value', (snapshot) => {
     const data = snapshot.val();
@@ -522,20 +531,16 @@ function setupRealtimeListener() {
       S.boardItems = data.boardItems || [];
       S.published = !!data.published;
       
-      // UI 즉시 업데이트
       if (S.rawData.length) {
         processData();
         applyFilters();
       }
       const nl = document.getElementById('noticeList');
       if (nl && !nl.classList.contains('hidden')) renderNotices();
-      
       const bl = document.getElementById('boardList');
       if (bl && !bl.classList.contains('hidden')) renderBoard();
-      
       if (S.role === 'admin') updatePublishUI();
 
-      // 우측 상단 배너 잠깐 띄우기
       const ub = document.getElementById('updateBanner');
       if(ub) {
         ub.classList.remove('hidden');
@@ -559,14 +564,10 @@ function getPayload() {
 }
 
 async function syncToServer() {
-  const payload = getPayload();
   try {
-    await db.ref('npsDashboard').set(payload);
+    await db.ref('npsDashboard').set(getPayload());
     setSyncStatus(true);
-  } catch(e) {
-    console.error(e);
-    alert('Firebase 저장 실패: ' + e.message);
-  }
+  } catch(e) { alert('Firebase 저장 실패: ' + e.message); }
 }
 
 async function changeUserPw() {
@@ -605,12 +606,6 @@ function updatePublishUI() {
   if (S.published) { el.className = 'publish-status published'; el.textContent = '✅ 배포완료'; }
   else { el.className = 'publish-status unpublished'; el.textContent = '⛔ 미배포'; }
 }
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.getAttribute('data-tab') === 'tab7' && S.role === 'admin') setTimeout(renderTab7, 0); 
-  });
-});
 
 /* ═══════════════════════════════════════════
    FILE UPLOAD (EXCEL PARSING)
@@ -661,7 +656,7 @@ function parseExcel(rows) {
   S.rawData = filtered;
   document.getElementById('publishBtn').disabled = false;
   processData(); showDashboard();
-  alert(filtered.length + '건의 데이터가 로드되었습니다. "배포하기"를 누르면 전체 반영됩니다.');
+  alert(filtered.length + '건의 데이터가 로드되었습니다. "즉시 배포하기"를 누르면 전체 반영됩니다.');
 }
 
 /* ═══════════════════════════════════════════
@@ -691,9 +686,18 @@ function processData() {
 
 function getFilteredData() {
   let data = [...S.rawData];
-  const teams = getMultiSelectValues('msTeam'); if (teams.length && teams.length < S.allTeams.length) data = data.filter(d => teams.includes(d._team));
-  const ag = getMultiSelectValues('msAgency'), allAg = getMultiSelectOptions('msAgency'); if (ag.length && ag.length < allAg.length) data = data.filter(d => ag.includes(d._agency));
-  const st = getMultiSelectValues('msStore'), allSt = getMultiSelectOptions('msStore'); if (st.length && st.length < allSt.length) data = data.filter(d => st.includes(d._store));
+  const teams = getMultiSelectValues('msTeam'), allTeams = getMultiSelectOptions('msTeam'); 
+  if (teams.length === 0) return [];
+  if (teams.length < allTeams.length) data = data.filter(d => teams.includes(d._team));
+  
+  const ag = getMultiSelectValues('msAgency'), allAg = getMultiSelectOptions('msAgency');
+  if (ag.length === 0) return [];
+  if (ag.length < allAg.length) data = data.filter(d => ag.includes(d._agency));
+  
+  const st = getMultiSelectValues('msStore'), allSt = getMultiSelectOptions('msStore');
+  if (st.length === 0) return [];
+  if (st.length < allSt.length) data = data.filter(d => st.includes(d._store));
+  
   const g = getMultiSelectValues('msGubun'); if (g.length && g.length < 3) data = data.filter(d => g.includes(d._gubun));
   
   const df = document.getElementById('filterDateFrom')?.value; const dt = document.getElementById('filterDateTo')?.value;
@@ -713,7 +717,7 @@ function calcNPS(items) {
 function scoreHTML(v) { const c = v==='-'?'score-mid':v>=90?'score-high':v>=80?'score-mid':'score-low'; return `<span class="score-cell ${c}">${v}</span>`; }
 
 /* ═══════════════════════════════════════════
-   MULTI-SELECT
+   MULTI-SELECT 연동 (Cascading Filter)
    ═══════════════════════════════════════════ */
 function buildMultiSelect(id, opts, onChange) {
   const w = document.getElementById(id); if(!w) return; w.innerHTML='';
@@ -728,12 +732,62 @@ function buildMultiSelect(id, opts, onChange) {
 function updMs(w){ const ch=w.querySelectorAll('.ms-option input'),t=ch.length,c=[...ch].filter(x=>x.checked).length; w.querySelector('.ms-trigger span').textContent=c===t?`전체 (${t})`:`${c}개 선택`; }
 function getMultiSelectValues(id){const w=document.getElementById(id);return w?[...w.querySelectorAll('.ms-option input:checked')].map(c=>c.value):[];}
 function getMultiSelectOptions(id){const w=document.getElementById(id);return w?[...w.querySelectorAll('.ms-option input')].map(c=>c.value):[];}
-function msAll(btn,check){const wrap=btn.closest('.ms-dropdown'); if(wrap){wrap.querySelectorAll('.ms-option input').forEach(c=>c.checked=check); updMs(btn.closest('.ms-wrap')); applyFilters();}}
+
+function msAll(btn,check){
+  const wrap = btn.closest('.ms-dropdown'); 
+  if(wrap){
+    wrap.querySelectorAll('.ms-option input').forEach(c=>c.checked=check); 
+    const msWrap = btn.closest('.ms-wrap');
+    updMs(msWrap); 
+    const id = msWrap.id;
+    if(id === 'msTeam') onTeamChange();
+    else if(id === 'msAgency') onAgencyChange();
+    else applyFilters();
+  }
+}
 document.addEventListener('click',()=>document.querySelectorAll('.ms-dropdown.open').forEach(d=>d.classList.remove('open')));
 
+function onTeamChange(){ 
+    const teams = getMultiSelectValues('msTeam');
+    let data = S.rawData;
+    if(teams.length && teams.length < S.allTeams.length) data = data.filter(d => teams.includes(d._team));
+    const agencies = [...new Set(data.map(d => d._agency))].filter(Boolean).sort();
+    buildMultiSelect('msAgency', agencies, onAgencyChange);
+    
+    const stores = [...new Set(data.map(d => d._store))].filter(Boolean).sort();
+    buildMultiSelect('msStore', stores, applyFilters);
+    applyFilters(); 
+}
+
+function onAgencyChange(){ 
+    const teams = getMultiSelectValues('msTeam');
+    const agencies = getMultiSelectValues('msAgency');
+    let data = S.rawData;
+    if(teams.length && teams.length < S.allTeams.length) data = data.filter(d => teams.includes(d._team));
+    if(agencies.length && agencies.length < getMultiSelectOptions('msAgency').length) data = data.filter(d => agencies.includes(d._agency));
+    
+    const stores = [...new Set(data.map(d => d._store))].filter(Boolean).sort();
+    buildMultiSelect('msStore', stores, applyFilters);
+    applyFilters(); 
+}
+
 /* ═══════════════════════════════════════════
-   DASHBOARD RENDER
+   DASHBOARD RENDER & EVENT BINDINGS
    ═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            const pane = document.getElementById(tabId);
+            if (pane) pane.classList.add('active');
+            if (tabId === 'tab7' && S.role === 'admin') setTimeout(renderTab7, 0); 
+        });
+    });
+});
+
 function showDashboard() {
   if (!S.rawData.length) return;
   ['filterSection','topSection','tabsSection','teamScoreboard'].forEach(id=> document.getElementById(id)?.classList.remove('hidden'));
@@ -744,35 +798,22 @@ function showDashboard() {
   if(document.getElementById('headerDateRange')) document.getElementById('headerDateRange').textContent=(dates[0]||'')+' ~ '+(dates[dates.length-1]||'');
   
   buildMultiSelect('msTeam', S.allTeams, onTeamChange);
-  updateAgencyFilter(); updateStoreFilter();
+  buildMultiSelect('msAgency', S.allAgencies, onAgencyChange);
+  buildMultiSelect('msStore', S.allStores, applyFilters);
   buildMultiSelect('msGubun',['추천','중립','비추천'],applyFilters);
   document.getElementById('filterDateFrom').onchange=applyFilters; document.getElementById('filterDateTo').onchange=applyFilters;
   
-  renderTeamScoreboard(); renderTopSection(); applyFilters(); renderNotices(); renderBoard(); renderTab6();
-}
-
-function onTeamChange(){ updateAgencyFilter(); updateStoreFilter(); applyFilters(); renderTeamScoreboard(); }
-function onAgencyChange(){ updateStoreFilter(); applyFilters(); }
-function updateAgencyFilter(){
-  const teams = getMultiSelectValues('msTeam');
-  const agencies = (teams.length && teams.length < S.allTeams.length) ? [...new Set(S.rawData.filter(d => teams.includes(d._team)).map(d => d._agency))].filter(Boolean).sort() : S.allAgencies;
-  buildMultiSelect('msAgency', agencies, onAgencyChange);
-}
-function updateStoreFilter(){
-  const ag = getMultiSelectValues('msAgency'), teams = getMultiSelectValues('msTeam'); let data = S.rawData;
-  if(teams.length && teams.length < S.allTeams.length) data = data.filter(d => teams.includes(d._team));
-  if(ag.length && ag.length < S.allAgencies.length) data = data.filter(d => ag.includes(d._agency));
-  buildMultiSelect('msStore', [...new Set(data.map(d => d._store))].filter(Boolean).sort(), applyFilters);
+  applyFilters();
 }
 
 function renderTeamScoreboard() {
   const container = document.getElementById('teamScoreboard'); if (!container) return; container.innerHTML = '';
   const activeTeams = getMultiSelectValues('msTeam'), teamsToRender = activeTeams.length ? activeTeams : S.allTeams;
   teamsToRender.forEach(tName => {
-    const tData = S.rawData.filter(d => d._team === tName);
+    const tData = S.filteredData.filter(d => d._team === tName);
     const nAll = calcNPS(tData), nSale = calcNPS(tData.filter(d => d._npsType === '판매성')), nNs = calcNPS(tData.filter(d => d._npsType === '비판매성'));
     const card = document.createElement('div'); card.className = 'team-card';
-    card.innerHTML = `<div class="team-card-header"><span>${tName} 현황</span><span style="font-size:11px; font-weight:400; opacity:0.7">총 ${tData.length}건</span></div>
+    card.innerHTML = `<div class="team-card-header"><span>${tName} 현황</span><span style="font-size:11px; font-weight:400; opacity:0.7">해당 조건 ${tData.length}건</span></div>
       <div class="team-card-body">${renderGaugeItem('종합', nAll.nps, 90)}${renderGaugeItem('판매성', nSale.nps, 90)}${renderGaugeItem('비판매성', nNs.nps, 87)}</div>`;
     container.appendChild(card);
   });
@@ -786,25 +827,40 @@ function renderGaugeItem(label, nps, target) {
     </div><div class="gauge-score ${val < target ? 'red' : 'green'}">${displayVal}</div></div>`;
 }
 
-let _fd;function applyFilters(){clearTimeout(_fd);_fd=setTimeout(()=>{S.filteredData=getFilteredData();updateFilterSummary();renderTeamScoreboard();renderTopSection();renderTab1();renderTab2();renderDetail();renderTab6();if(S.role==='admin')renderTab7();},120);}
+let _fd;function applyFilters(){clearTimeout(_fd);_fd=setTimeout(()=>{
+  S.filteredData=getFilteredData();
+  updateFilterSummary();
+  renderTeamScoreboard();
+  renderTopSection();
+  renderTab1();
+  renderTab2();
+  renderDetail();
+  renderTab6();
+  if(S.role==='admin') renderTab7();
+  renderNotices(); renderBoard();
+},120);}
+
 function resetFilters(){
   if(document.getElementById('globalSearch')) document.getElementById('globalSearch').value='';
   const dates = S.rawData.map(d=>d._bizDate).filter(Boolean).sort();
   if(document.getElementById('filterDateFrom')) document.getElementById('filterDateFrom').value=dates[0]||'';
   if(document.getElementById('filterDateTo')) document.getElementById('filterDateTo').value=dates[dates.length-1]||'';
-  msReset('msTeam');msReset('msAgency');msReset('msStore');msReset('msGubun');
-  updateAgencyFilter();updateStoreFilter();applyFilters();
+  msReset('msTeam');
+  onTeamChange();
 }
 function msReset(id){const w=document.getElementById(id);if(w){w.querySelectorAll('.ms-option input').forEach(c=>c.checked=true);updMs(w);}}
+
 function updateFilterSummary(){
   const el=document.getElementById('filterSummary'); if(!el) return;
   const parts=[];
-  const ag=getMultiSelectValues('msAgency');if(ag.length&&ag.length<S.allAgencies.length)parts.push('대리점:'+ag.length+'개');
-  const st=getMultiSelectValues('msStore'),allSt=getMultiSelectOptions('msStore');if(st.length&&st.length<allSt.length)parts.push('매장:'+st.length+'개');
+  const ag=getMultiSelectValues('msAgency'), allAg = getMultiSelectOptions('msAgency');
+  if(ag.length&&ag.length<allAg.length)parts.push('대리점:'+ag.length+'개');
+  const st=getMultiSelectValues('msStore'),allSt=getMultiSelectOptions('msStore');
+  if(st.length&&st.length<allSt.length)parts.push('매장:'+st.length+'개');
   const g=getMultiSelectValues('msGubun');if(g.length&&g.length<3)parts.push('구분:'+g.join(','));
   const df=document.getElementById('filterDateFrom')?.value, dt=document.getElementById('filterDateTo')?.value;
   if(df||dt)parts.push('기간:'+(df||'')+' ~ '+(dt||''));
-  if(parts.length){el.classList.remove('hidden');el.innerHTML='<strong>적용 필터:</strong> '+parts.map(p=>`<span class="filter-tag">${p}</span>`).join('')+` <span style="margin-left:auto;color:var(--text-muted);font-size:10px">${S.filteredData.length}건</span>`;}else el.classList.add('hidden');
+  if(parts.length){el.classList.remove('hidden');el.innerHTML='<strong>적용 필터:</strong> '+parts.map(p=>`<span class="filter-tag">${p}</span>`).join('')+` <span style="margin-left:auto;color:var(--text-muted);font-size:10px">현재 ${S.filteredData.length}건</span>`;}else el.classList.add('hidden');
 }
 
 function renderTopSection() {
@@ -845,27 +901,67 @@ function rc(title,items,key,isH){
   return`<div style="min-width:0"><div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px">${title}</div><ul class="rank-list">${list||'<li style="color:var(--text-muted)">데이터 없음</li>'}</ul></div>`;
 }
 
+/* ═══════════════════════════════════════════
+   TAB1 / TAB2 (💡 테이블 안보임 버그 완벽해결)
+   ═══════════════════════════════════════════ */
 function renderTab1(){
-  const map={};S.filteredData.forEach(d=>{if(!map[d._agency])map[d._agency]={n:d._agency,a:[],s:[],ns:[]};map[d._agency].a.push(d);(d._npsType==='판매성'?map[d._agency].s:map[d._agency].ns).push(d);});
-  let rows=Object.values(map).map(a=>({name:a.n,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.nonsale)}));
-  if(S.tab1Sort.col)rows.sort((a,b)=>srt(a,b,S.tab1Sort));
-  const si=c=>`<span style="font-size:10px;margin-left:4px;opacity:${S.tab1Sort.col===c?1:.4}">${S.tab1Sort.col===c?(S.tab1Sort.asc?'▲':'▼'):'↕'}</span>`;
-  let h=`<table class="data-table"><thead><tr><th onclick="s1('name')">대리점명${si('name')}</th><th onclick="s1('allNPS')">종합NPS${si('allNPS')}</th><th onclick="s1('allTotal')">건수${si('allTotal')}</th><th>추천/중립/비추천</th><th onclick="s1('saleNPS')">판매성NPS${si('saleNPS')}</th><th>판매성건수</th><th onclick="s1('nonsaleNPS')">비판매성NPS${si('nonsaleNPS')}</th><th>비판매성건수</th><th>자세히</th></tr></thead><tbody>`;
-  rows.forEach(r=>{h+=`<tr><td style="text-align:left;font-weight:600">${r.name}</td><td>${scoreHTML(r.allNPS.nps)}</td><td>${r.allNPS.total}</td><td style="font-size:11px">${r.allNPS.p}/${r.allNPS.n}/${r.allNPS.d}</td><td>${scoreHTML(r.saleNPS.nps)}</td><td>${r.saleNPS.total}</td><td>${scoreHTML(r.nonsaleNPS.nps)}</td><td>${r.nonsaleNPS.total}</td><td><button class="btn btn-sm btn-outline" onclick="showSD('agency','${r.name}')">자세히</button></td></tr>`;});
-  if(document.getElementById('tab1Content')) document.getElementById('tab1Content').innerHTML=h+'</tbody></table>';
+  try {
+    const map={};
+    S.filteredData.forEach(d=>{
+      if(!map[d._agency])map[d._agency]={n:d._agency,a:[],s:[],ns:[]};
+      map[d._agency].a.push(d);
+      (d._npsType==='판매성'?map[d._agency].s:map[d._agency].ns).push(d);
+    });
+    let rows=Object.values(map).map(a=>({name:a.n,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.ns)}));
+    if(S.tab1Sort.col)rows.sort((a,b)=>srt(a,b,S.tab1Sort));
+    const si=c=>`<span style="font-size:10px;margin-left:4px;opacity:${S.tab1Sort.col===c?1:.4}">${S.tab1Sort.col===c?(S.tab1Sort.asc?'▲':'▼'):'↕'}</span>`;
+    
+    let h=`<table class="data-table"><thead><tr><th onclick="s1('name')">대리점명${si('name')}</th><th onclick="s1('allNPS')">종합NPS${si('allNPS')}</th><th onclick="s1('allTotal')">건수${si('allTotal')}</th><th>추천/중립/비추천</th><th onclick="s1('saleNPS')">판매성NPS${si('saleNPS')}</th><th>판매성건수</th><th onclick="s1('nonsaleNPS')">비판매성NPS${si('nonsaleNPS')}</th><th>비판매성건수</th><th>자세히</th></tr></thead><tbody>`;
+    
+    if(rows.length === 0) {
+      h += `<tr><td colspan="9" style="padding:40px; text-align:center; color:var(--text-muted);">조건에 일치하는 데이터가 없습니다.</td></tr>`;
+    } else {
+      rows.forEach(r=>{
+        const safeName = String(r.name).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        h+=`<tr><td style="text-align:left;font-weight:600">${r.name}</td><td>${scoreHTML(r.allNPS.nps)}</td><td>${r.allNPS.total}</td><td style="font-size:11px">${r.allNPS.p}/${r.allNPS.n}/${r.allNPS.d}</td><td>${scoreHTML(r.saleNPS.nps)}</td><td>${r.saleNPS.total}</td><td>${scoreHTML(r.nonsaleNPS.nps)}</td><td>${r.nonsaleNPS.total}</td><td><button class="btn btn-sm btn-outline" onclick="showSD('agency','${safeName}')">자세히</button></td></tr>`;
+      });
+    }
+    h += '</tbody></table>';
+    const content = document.getElementById('tab1Content');
+    if(content) content.innerHTML = h;
+  } catch(e) { console.error('Tab1 Render Error:', e); }
 }
 function s1(c){S.tab1Sort.asc = (S.tab1Sort.col===c) ? !S.tab1Sort.asc : true; S.tab1Sort.col=c; renderTab1();}
 
 function renderTab2(){
-  const map={};S.filteredData.forEach(d=>{if(!map[d._store])map[d._store]={n:d._store,ag:d._agency,a:[],s:[],ns:[]};map[d._store].a.push(d);(d._npsType==='판매성'?map[d._store].s:map[d._store].ns).push(d);});
-  let rows=Object.values(map).map(a=>({name:a.n,agency:a.ag,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.nonsale)}));
-  if(S.tab2Sort.col)rows.sort((a,b)=>srt(a,b,S.tab2Sort));
-  const si=c=>`<span style="font-size:10px;margin-left:4px;opacity:${S.tab2Sort.col===c?1:.4}">${S.tab2Sort.col===c?(S.tab2Sort.asc?'▲':'▼'):'↕'}</span>`;
-  let h=`<table class="data-table"><thead><tr><th onclick="s2('agency')">대리점${si('agency')}</th><th onclick="s2('name')">매장명${si('name')}</th><th onclick="s2('allNPS')">종합NPS${si('allNPS')}</th><th onclick="s2('allTotal')">건수${si('allTotal')}</th><th>추천/중립/비추천</th><th onclick="s2('saleNPS')">판매성${si('saleNPS')}</th><th>판매성건수</th><th onclick="s2('nonsaleNPS')">비판매성${si('nonsaleNPS')}</th><th>비판매성건수</th><th>자세히</th></tr></thead><tbody>`;
-  rows.forEach(r=>{h+=`<tr><td style="text-align:left">${r.agency}</td><td style="text-align:left;font-weight:600">${r.name}</td><td>${scoreHTML(r.allNPS.nps)}</td><td>${r.allNPS.total}</td><td style="font-size:11px">${r.allNPS.p}/${r.allNPS.n}/${r.allNPS.d}</td><td>${scoreHTML(r.saleNPS.nps)}</td><td>${r.saleNPS.total}</td><td>${scoreHTML(r.nonsaleNPS.nps)}</td><td>${r.nonsaleNPS.total}</td><td><button class="btn btn-sm btn-outline" onclick="showSD('store','${r.name.replace(/'/g,"\\'")}')">자세히</button></td></tr>`;});
-  if(document.getElementById('tab2Content')) document.getElementById('tab2Content').innerHTML=h+'</tbody></table>';
+  try {
+    const map={};
+    S.filteredData.forEach(d=>{
+      if(!map[d._store])map[d._store]={n:d._store,ag:d._agency,a:[],s:[],ns:[]};
+      map[d._store].a.push(d);
+      (d._npsType==='판매성'?map[d._store].s:map[d._store].ns).push(d);
+    });
+    let rows=Object.values(map).map(a=>({name:a.n,agency:a.ag,allNPS:calcNPS(a.a),saleNPS:calcNPS(a.s),nonsaleNPS:calcNPS(a.ns)}));
+    if(S.tab2Sort.col)rows.sort((a,b)=>srt(a,b,S.tab2Sort));
+    const si=c=>`<span style="font-size:10px;margin-left:4px;opacity:${S.tab2Sort.col===c?1:.4}">${S.tab2Sort.col===c?(S.tab2Sort.asc?'▲':'▼'):'↕'}</span>`;
+    
+    let h=`<table class="data-table"><thead><tr><th onclick="s2('agency')">대리점${si('agency')}</th><th onclick="s2('name')">매장명${si('name')}</th><th onclick="s2('allNPS')">종합NPS${si('allNPS')}</th><th onclick="s2('allTotal')">건수${si('allTotal')}</th><th>추천/중립/비추천</th><th onclick="s2('saleNPS')">판매성${si('saleNPS')}</th><th>판매성건수</th><th onclick="s2('nonsaleNPS')">비판매성${si('nonsaleNPS')}</th><th>비판매성건수</th><th>자세히</th></tr></thead><tbody>`;
+    
+    if(rows.length === 0) {
+      h += `<tr><td colspan="10" style="padding:40px; text-align:center; color:var(--text-muted);">조건에 일치하는 데이터가 없습니다.</td></tr>`;
+    } else {
+      rows.forEach(r=>{
+        const safeName = String(r.name).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        h+=`<tr><td style="text-align:left">${r.agency}</td><td style="text-align:left;font-weight:600">${r.name}</td><td>${scoreHTML(r.allNPS.nps)}</td><td>${r.allNPS.total}</td><td style="font-size:11px">${r.allNPS.p}/${r.allNPS.n}/${r.allNPS.d}</td><td>${scoreHTML(r.saleNPS.nps)}</td><td>${r.saleNPS.total}</td><td>${scoreHTML(r.nonsaleNPS.nps)}</td><td>${r.nonsaleNPS.total}</td><td><button class="btn btn-sm btn-outline" onclick="showSD('store','${safeName}')">자세히</button></td></tr>`;
+      });
+    }
+    h += '</tbody></table>';
+    const content = document.getElementById('tab2Content');
+    if(content) content.innerHTML = h;
+  } catch(e) { console.error('Tab2 Render Error:', e); }
 }
 function s2(c){S.tab2Sort.asc = (S.tab2Sort.col===c) ? !S.tab2Sort.asc : true; S.tab2Sort.col=c; renderTab2();}
+
 function srt(a,b,st){
   const c=st.col;let va,vb;
   if(c==='name'){va=a.name;vb=b.name;return st.asc?va.localeCompare(vb):vb.localeCompare(va);}
@@ -888,18 +984,27 @@ function showSD(type,name){
 }
 function closeSubDetail(){ document.getElementById('subDetailOverlay')?.classList.add('hidden'); }
 
+/* ═══════════════════════════════════════════
+   TAB3 (상세리스트)
+   ═══════════════════════════════════════════ */
 const DC=['대리점명','매장명','구분','업무유형','합계','처리직원','처리일','추천지수','추천사유','당사신뢰도','미신뢰사유','종합의견'],PS=50;
 function renderDetail(){
   let data=S.filteredData;
   const q=(document.getElementById('detailSearch')?.value||'').trim().toLowerCase();
   if(q)data=data.filter(d=>DC.some(c=>String(d[c]).toLowerCase().includes(q)));
   if(S.detailSort.col){data=[...data].sort((a,b)=>{const va=String(a[S.detailSort.col]||''),vb=String(b[S.detailSort.col]||''),na=Number(va),nb=Number(vb);if(!isNaN(na)&&!isNaN(nb))return S.detailSort.asc?na-nb:nb-na;return S.detailSort.asc?va.localeCompare(vb):vb.localeCompare(va);});}
+  
   const tp=Math.max(1,Math.ceil(data.length/PS));if(S.detailPage>tp)S.detailPage=tp;
   const st=(S.detailPage-1)*PS,pd=data.slice(st,st+PS);
   let h=`<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">총 ${data.length}건 중 ${st+1}~${Math.min(st+PS,data.length)}건</div><div class="table-scroll"><table class="data-table"><thead><tr>`;
   DC.forEach(c=>{h+=`<th onclick="sd('${c}')" style="font-size:11px">${c}${S.detailSort.col===c?(S.detailSort.asc?' ▲':' ▼'):' ↕'}</th>`;});
   h+='</tr></thead><tbody>';
-  pd.forEach(d=>{h+='<tr>';DC.forEach(c=>{let v=d[c]!==undefined?d[c]:'';if(c==='구분')v=`<span class="score-cell ${v==='추천'?'score-high':v==='비추천'?'score-low':'score-mid'}" style="font-size:11px">${v}</span>`;h+=`<td style="font-size:11px;${['추천사유','종합의견','미신뢰사유'].includes(c)?'text-align:left;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;':''}" title="${String(d[c]||'').replace(/"/g,'&quot;')}">${v}</td>`;});h+='</tr>';});
+  
+  if(pd.length === 0) {
+      h += `<tr><td colspan="12" style="padding:40px; text-align:center; color:var(--text-muted);">조건에 일치하는 데이터가 없습니다.</td></tr>`;
+  } else {
+      pd.forEach(d=>{h+='<tr>';DC.forEach(c=>{let v=d[c]!==undefined?d[c]:'';if(c==='구분')v=`<span class="score-cell ${v==='추천'?'score-high':v==='비추천'?'score-low':'score-mid'}" style="font-size:11px">${v}</span>`;h+=`<td style="font-size:11px;${['추천사유','종합의견','미신뢰사유'].includes(c)?'text-align:left;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;':''}" title="${String(d[c]||'').replace(/"/g,'&quot;')}">${v}</td>`;});h+='</tr>';});
+  }
   if(document.getElementById('tab3Content')) document.getElementById('tab3Content').innerHTML=h+'</tbody></table></div>';
   
   let pg=`<button ${S.detailPage<=1?'disabled':''} onclick="S.detailPage=1;renderDetail()">«</button><button ${S.detailPage<=1?'disabled':''} onclick="S.detailPage--;renderDetail()">‹</button>`;
@@ -1035,7 +1140,7 @@ async function saveNotice(){
 async function deleteNotice(i){if(!confirm('삭제하시겠습니까?'))return;S.notices.splice(i,1);showLoading('삭제 중...');try{await syncToServer();}catch(e){}hideLoading();renderNotices();}
 
 /* ═══════════════════════════════════════════
-   TAB5 BOARD
+   TAB5 소명 BOARD
    ═══════════════════════════════════════════ */
 function renderBoard(){
   const el=document.getElementById('boardList');
@@ -1085,9 +1190,8 @@ async function submitBoard(){
 async function deleteBoardItem(i){if(!confirm('삭제?'))return;S.boardItems.splice(i,1);showLoading('삭제 중...');await syncToServer();hideLoading();renderBoard();}
 
 /* ═══════════════════════════════════════════
-   TABS NAV / CAPTURE / ETC
+   캡쳐 유틸
    ═══════════════════════════════════════════ */
-document.querySelectorAll('.tab-btn').forEach(btn=>{btn.onclick=()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById(btn.dataset.tab)?.classList.add('active');};});
 function captureTab(id){
   const el=document.getElementById(id); if(!el) return;
   const scrollEls=el.querySelectorAll('.table-scroll'), origStyles=[]; scrollEls.forEach(s=>{origStyles.push(s.style.maxHeight);s.style.maxHeight='none';});
@@ -1098,28 +1202,119 @@ function captureTab(id){
   }).catch(e=>{scrollEls.forEach((s,i)=>{s.style.maxHeight=origStyles[i];});hideLoading();});
 }
 
-let _teamChart=null; let _agencyCharts=[];
+/* ═══════════════════════════════════════════
+   TAB6: 일별 변동추이 (💡 팀별 그래프 상하배치 & 대리점 2열 3행 페이징 고도화)
+   ═══════════════════════════════════════════ */
+let _teamCharts=[]; 
+let _agencyCharts=[];
+let _agencyChartPage=0;
+const AGENCY_PER_PAGE=8; // 💡 8개씩 표출 (2열 4행)
+
 function renderTab6(){
-  const dateMap={}; S.filteredData.forEach(d=>{ const dt=d._bizDate;if(!dt)return; if(!dateMap[dt])dateMap[dt]={all:[],sale:[],nonsale:[]}; dateMap[dt].all.push(d);(d._npsType==='판매성'?dateMap[dt].sale:dateMap[dt].nonsale).push(d); });
-  const dates=Object.keys(dateMap).sort(), labels=dates.map(d=>d.slice(5));
-  if(_teamChart){_teamChart.destroy();}
-  const ctx=document.getElementById('chartTeamDaily');
-  if(ctx) _teamChart=new Chart(ctx,{ type:'line', data:{ labels, datasets:[
-      {label:'종합NPS',data:dates.map(dt=>calcNPS(dateMap[dt].all).nps==='-'?null:calcNPS(dateMap[dt].all).nps),borderColor:'#1B3A5C',backgroundColor:'rgba(27,58,92,.1)',tension:.3,pointRadius:4,borderWidth:2.5},
-      {label:'판매성',data:dates.map(dt=>calcNPS(dateMap[dt].sale).nps==='-'?null:calcNPS(dateMap[dt].sale).nps),borderColor:'#1A8A4A',backgroundColor:'rgba(26,138,74,.1)',tension:.3,pointRadius:4,borderWidth:2},
-      {label:'비판매성',data:dates.map(dt=>calcNPS(dateMap[dt].nonsale).nps==='-'?null:calcNPS(dateMap[dt].nonsale).nps),borderColor:'#E8531E',backgroundColor:'rgba(232,83,30,.1)',tension:.3,pointRadius:4,borderWidth:2},
-    ]}, options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{mode:'index',intersect:false}},scales:{y:{min:50,max:105}}}
+  renderTeamDailyCharts();
+  renderAgencyDailyCharts();
+}
+
+// 팀별 그래프 독립 & 상하 배치 표출
+function renderTeamDailyCharts(){
+  const area = document.getElementById('teamChartsArea');
+  if(!area) return;
+  
+  _teamCharts.forEach(c => c.destroy());
+  _teamCharts = [];
+  
+  const activeTeams = getMultiSelectValues('msTeam');
+  const teams = activeTeams.length ? activeTeams : S.allTeams;
+  
+  if(!teams.length) {
+      area.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">표출할 데이터가 없습니다.</div>';
+      return;
+  }
+  
+  // 지정된 순서대로 정렬 (동광주 -> 서광주 -> 전북 -> 제주)
+  const TEAM_ORDER = ['동광주', '서광주', '전북', '제주'];
+  teams.sort((a, b) => {
+      const idxA = TEAM_ORDER.indexOf(a);
+      const idxB = TEAM_ORDER.indexOf(b);
+      if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+      if (idxA === -1) return 1;
+      if (idxB === -1) return -1;
+      return idxA - idxB;
   });
 
-  const area=document.getElementById('agencyChartsArea'); if(!area)return;
-  _agencyCharts.forEach(c=>c.destroy()); _agencyCharts=[];
-  const agencies = (getMultiSelectValues('msAgency').length && getMultiSelectValues('msAgency').length < S.allAgencies.length) ? getMultiSelectValues('msAgency').sort() : [...S.allAgencies].sort();
-  let html='<div class="chart-grid">';
-  agencies.slice(0, 4).forEach((ag,i)=>{ html+=`<div class="chart-card" onclick="openChartPopup('${ag.replace(/'/g,"\\'")}')"><h4>${ag}</h4><canvas id="agChart${i}" height="70"></canvas></div>`; });
-  area.innerHTML=html+'</div>';
-  agencies.slice(0, 4).forEach((ag,i)=>{
-    const chartObj=buildAgencyChartOnCanvas('agChart'+i,ag,S.filteredData,{legendSize:10,pointR:3,borderW:1.5,yMin:40}); if(chartObj)_agencyCharts.push(chartObj);
+  // grid-template-columns: 1fr; 로 상하 배치 강제
+  let html='<div class="chart-grid" style="grid-template-columns: 1fr;">';
+  teams.forEach((t, i) => { html+=`<div class="chart-card"><h4>📈 ${t} 변동추이</h4><canvas id="teamChart${i}" height="60"></canvas></div>`; });
+  area.innerHTML = html + '</div>';
+  
+  teams.forEach((t, i) => {
+      const tData = S.filteredData.filter(d => d._team === t);
+      const dateMap={};
+      tData.forEach(d=>{ const dt=d._bizDate;if(!dt)return; if(!dateMap[dt])dateMap[dt]={all:[],sale:[],nonsale:[]}; dateMap[dt].all.push(d);(d._npsType==='판매성'?dateMap[dt].sale:dateMap[dt].nonsale).push(d); });
+      const dates=Object.keys(dateMap).sort(), labels=dates.map(d=>d.slice(5));
+      const ctx=document.getElementById('teamChart'+i);
+      
+      if(ctx && labels.length) {
+          const chart = new Chart(ctx,{ type:'line', data:{ labels, datasets:[
+              {label:'종합NPS',data:dates.map(dt=>calcNPS(dateMap[dt].all).nps==='-'?null:calcNPS(dateMap[dt].all).nps),borderColor:'#1B3A5C',backgroundColor:'rgba(27,58,92,.05)',fill:true,tension:.3,pointRadius:3,borderWidth:2.5},
+              {label:'판매성',data:dates.map(dt=>calcNPS(dateMap[dt].sale).nps==='-'?null:calcNPS(dateMap[dt].sale).nps),borderColor:'#1A8A4A',tension:.3,pointRadius:3,borderWidth:2},
+              {label:'비판매성',data:dates.map(dt=>calcNPS(dateMap[dt].nonsale).nps==='-'?null:calcNPS(dateMap[dt].nonsale).nps),borderColor:'#E8531E',tension:.3,pointRadius:3,borderWidth:2},
+          ]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{boxWidth:12,font:{size:10}}}},scales:{y:{min:50,max:105,ticks:{font:{size:10}}},x:{ticks:{font:{size:9}}}}}
+          });
+          _teamCharts.push(chart);
+      } else if (ctx) {
+          ctx.parentNode.innerHTML += '<div style="text-align:center;padding:20px;color:#999;font-size:11px;">데이터 없음</div>';
+      }
   });
+}
+
+// 6개 단위 대리점 페이징 (2열 3행)
+function renderAgencyDailyCharts(){
+  const area=document.getElementById('agencyChartsArea');
+  const pgArea=document.getElementById('agencyChartPagination');
+  if(!area) return;
+  
+  const agSel = getMultiSelectValues('msAgency');
+  const allAg = getMultiSelectOptions('msAgency');
+  let agencies = agSel.length && agSel.length < allAg.length ? agSel.sort() : [...allAg].sort();
+  
+  // 연동 필터 결과에 남아있는 대리점만 추출
+  const validAgencies = [...new Set(S.filteredData.map(d=>d._agency))].filter(Boolean);
+  agencies = agencies.filter(a => validAgencies.includes(a));
+
+  const totalPages = Math.max(1, Math.ceil(agencies.length / AGENCY_PER_PAGE));
+  if(_agencyChartPage >= totalPages) _agencyChartPage = totalPages - 1;
+  if(_agencyChartPage < 0) _agencyChartPage = 0;
+  
+  const startIdx = _agencyChartPage * AGENCY_PER_PAGE;
+  const pageAgencies = agencies.slice(startIdx, startIdx + AGENCY_PER_PAGE);
+
+  if(pgArea){
+    let pgHTML=`<span style="font-size:11px;color:var(--text-muted)">총 ${agencies.length}개 대리점 (${_agencyChartPage+1}/${totalPages} 페이지)</span>`;
+    pgHTML+=`<button class="btn btn-sm btn-outline" ${_agencyChartPage<=0?'disabled':''} onclick="_agencyChartPage--;renderAgencyDailyCharts()">◀ 이전</button>`;
+    pgHTML+=`<button class="btn btn-sm btn-outline" ${_agencyChartPage>=totalPages-1?'disabled':''} onclick="_agencyChartPage++;renderAgencyDailyCharts()">다음 ▶</button>`;
+    pgArea.innerHTML=pgHTML;
+  }
+
+  _agencyCharts.forEach(c=>c.destroy());
+  _agencyCharts=[];
+
+  if(!pageAgencies.length) {
+      area.innerHTML = '<div style="text-align:center;padding:30px;color:#888;">해당 필터에 맞는 대리점 데이터가 없습니다.</div>';
+      return;
+  }
+
+  // grid-template-columns: 1fr 1fr; 로 2열 배치 강제
+  let html='<div class="chart-grid" style="grid-template-columns: 1fr 1fr;">';
+  pageAgencies.forEach((ag,i)=>{ html+=`<div class="chart-card" onclick="openChartPopup('${ag.replace(/'/g,"\\'")}')"><h4>${ag} <span style="font-size:10px;color:var(--text-muted);font-weight:400">🔍 클릭하여 확대</span></h4><canvas id="agChart${i}" height="80"></canvas></div>`; });
+  area.innerHTML=html+'</div>';
+
+  pageAgencies.forEach((ag,i)=>{
+    const chartObj=buildAgencyChartOnCanvas('agChart'+i,ag,S.filteredData,{legendSize:10,pointR:3,borderW:1.5,yMin:40}); 
+    if(chartObj)_agencyCharts.push(chartObj);
+  });
+  
+  if(S.role==='admin') renderWeakAgencyCharts();
 }
 
 function buildAgencyChartOnCanvas(canvasId,agencyName,dataSource,opts){
@@ -1131,9 +1326,10 @@ function buildAgencyChartOnCanvas(canvasId,agencyName,dataSource,opts){
         {label:'종합',data:dates.map(dt=>{const n=calcNPS(dateMap[dt].all);return n.nps==='-'?null:n.nps;}),borderColor:'#1B3A5C',backgroundColor:'rgba(27,58,92,.08)',fill:true,tension:.3,pointRadius:opts.pointR||3,borderWidth:opts.borderW||2},
         {label:'판매성',data:dates.map(dt=>{const n=calcNPS(dateMap[dt].sale);return n.nps==='-'?null:n.nps;}),borderColor:'#1A8A4A',tension:.3,pointRadius:opts.pointR||3,borderWidth:(opts.borderW||2)*0.8},
         {label:'비판매성',data:dates.map(dt=>{const n=calcNPS(dateMap[dt].nonsale);return n.nps==='-'?null:n.nps;}),borderColor:'#E8531E',tension:.3,pointRadius:opts.pointR||3,borderWidth:(opts.borderW||2)*0.8},
-      ]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{boxWidth:14}}},scales:{y:{min:opts.yMin||40,max:105}}}
+      ]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:14}}},scales:{y:{min:opts.yMin||40,max:105}}}
   });
 }
+
 let _popupChart=null;
 function openChartPopup(agencyName){
   if(document.getElementById('chartPopupTitle')) document.getElementById('chartPopupTitle').textContent=agencyName+' 변동추이';
@@ -1146,6 +1342,59 @@ function closeChartPopup(){ document.getElementById('chartPopupOverlay')?.classL
 function captureChartPopup(){
   html2canvas(document.getElementById('chartPopupBody'),{scale:2,backgroundColor:'#fff',useCORS:true}).then(c=>{
     const l=document.createElement('a');l.download=`NPS_${Date.now()}.jpg`;l.href=c.toDataURL('image/jpeg',.95);l.click();
+  });
+}
+
+// 관리자 전용: 최근 1주일 팀 평균 미만 대리점
+let _weakCharts=[];
+function renderWeakAgencyCharts(){
+  const section=document.getElementById('weakAgencySection');
+  const area=document.getElementById('weakAgencyChartsArea');
+  if(!section||!area)return;
+
+  _weakCharts.forEach(c=>c.destroy());
+  _weakCharts=[];
+
+  const allDates=S.rawData.map(d=>d._bizDate).filter(Boolean).sort();
+  const lastDate=allDates[allDates.length-1];
+  if(!lastDate){section.classList.add('hidden');return;}
+  const lastDt=new Date(lastDate);
+  const weekAgo=new Date(lastDt);weekAgo.setDate(weekAgo.getDate()-6);
+  const weekAgoStr=weekAgo.toISOString().slice(0,10);
+
+  const recentData=S.rawData.filter(d=>d._bizDate>=weekAgoStr&&d._bizDate<=lastDate);
+  if(!recentData.length){section.classList.add('hidden');return;}
+
+  const teamNPS=calcNPS(recentData);
+  if(teamNPS.nps==='-'){section.classList.add('hidden');return;}
+
+  const agMap={};
+  recentData.forEach(d=>{
+    if(!agMap[d._agency])agMap[d._agency]=[];
+    agMap[d._agency].push(d);
+  });
+
+  const weakAgencies=[];
+  Object.entries(agMap).forEach(([name,items])=>{
+    const nps=calcNPS(items);
+    if(nps.nps!=='-'&&nps.nps<teamNPS.nps) weakAgencies.push({name,nps:nps.nps,total:nps.total});
+  });
+  weakAgencies.sort((a,b)=>a.nps-b.nps);
+
+  if(!weakAgencies.length){section.classList.add('hidden');return;}
+
+  section.classList.remove('hidden');
+  let html=`<div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">최근 1주일(${weekAgoStr}~${lastDate}) 팀 전체 평균 종합NPS <b style="color:var(--primary)">${teamNPS.nps}점</b> 미만 대리점 <b style="color:var(--danger)">${weakAgencies.length}개</b></div>`;
+  html+='<div class="chart-grid" style="grid-template-columns: 1fr 1fr;">';
+  weakAgencies.forEach((ag,i)=>{
+    html+=`<div class="chart-card" onclick="openChartPopup('${ag.name.replace(/'/g,"\\'")}')"><h4 style="color:var(--danger)">${ag.name} <span style="font-size:11px;font-weight:400">(${ag.nps}점, 평균 대비 ${(ag.nps-teamNPS.nps).toFixed(1)})</span> <span style="font-size:10px;color:var(--text-muted)">🔍 클릭확대</span></h4><canvas id="weakAgChart${i}" height="70"></canvas></div>`;
+  });
+  html+='</div>';
+  area.innerHTML=html;
+
+  weakAgencies.forEach((ag,i)=>{
+    const c=buildAgencyChartOnCanvas('weakAgChart'+i,ag.name,S.rawData,{legendSize:10,pointR:3,borderW:1.5,yMin:40});
+    if(c)_weakCharts.push(c);
   });
 }
 
@@ -1277,7 +1526,7 @@ function renderTab7() {
   }
 }
 
-// PDF 다운로드 기능 복구
+// PDF 다운로드
 async function downloadTodoPDF(){
   const area=document.getElementById('tab7PrintArea');
   if(!area){alert('보고서 영역을 찾을 수 없습니다.');return;}
@@ -1298,7 +1547,7 @@ async function downloadTodoPDF(){
       link.download=`서부마케팅본부_마케터ToDo_${new Date().toISOString().slice(0,10)}.jpg`;
       link.href=canvas.toDataURL('image/jpeg',0.95);
       link.click();
-      alert('PDF 라이브러리 로드 실패로 이미지로 대신 저장되었습니다.');
+      alert('PDF 라이브러리 로드 실패로 이미지로 저장되었습니다.');
       return;
     }
     const pdf=new jsPDFClass('p','mm','a4');
@@ -1323,14 +1572,14 @@ async function downloadTodoPDF(){
 }
 
 /* ═══════════════════════════════════════════
-   PWA & UTILS
+   PWA 
    ═══════════════════════════════════════════ */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'activated') document.getElementById('updateBanner').classList.remove('hidden');
+        if (newWorker.state === 'activated') document.getElementById('updateBanner')?.classList.remove('hidden');
       });
     });
   }).catch(err => console.log('SW registration failed:', err));
