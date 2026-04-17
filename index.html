@@ -369,7 +369,7 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
             <div class="card-body" id="teamChartsArea"></div>
           </div>
           <div id="weakAgencySection" class="card hidden" style="margin-bottom:16px;border-color:#FFCDD2">
-            <div class="card-header" style="background:#FFF3E0"><h3>⚠️ 최근 1주일 팀 전체 평균 미만 대리점 변동추이</h3></div>
+            <div class="card-header" style="background:#FFF3E0"><h3>⚠️ 최근 1주일 팀 전체 평균 미만 대리점 변동추이</h3><div id="weakAgencyChartPagination" style="display:flex;gap:6px;align-items:center;margin-left:auto"></div></div>
             <div class="card-body" id="weakAgencyChartsArea"></div>
           </div>
           <div class="card">
@@ -1347,26 +1347,31 @@ function captureChartPopup(){
 
 // 관리자 전용: 최근 1주일 팀 평균 미만 대리점
 let _weakCharts=[];
+let _weakAgencyChartPage=0;
 function renderWeakAgencyCharts(){
   const section=document.getElementById('weakAgencySection');
   const area=document.getElementById('weakAgencyChartsArea');
+  const pgArea=document.getElementById('weakAgencyChartPagination');
   if(!section||!area)return;
 
   _weakCharts.forEach(c=>c.destroy());
   _weakCharts=[];
 
-  const allDates=S.rawData.map(d=>d._bizDate).filter(Boolean).sort();
+  // 필터 적용: S.filteredData 사용 (필터 선택에 따라 반응)
+  const baseData = S.filteredData && S.filteredData.length ? S.filteredData : S.rawData;
+
+  const allDates=baseData.map(d=>d._bizDate).filter(Boolean).sort();
   const lastDate=allDates[allDates.length-1];
-  if(!lastDate){section.classList.add('hidden');return;}
+  if(!lastDate){section.classList.add('hidden');if(pgArea)pgArea.innerHTML='';return;}
   const lastDt=new Date(lastDate);
   const weekAgo=new Date(lastDt);weekAgo.setDate(weekAgo.getDate()-6);
   const weekAgoStr=weekAgo.toISOString().slice(0,10);
 
-  const recentData=S.rawData.filter(d=>d._bizDate>=weekAgoStr&&d._bizDate<=lastDate);
-  if(!recentData.length){section.classList.add('hidden');return;}
+  const recentData=baseData.filter(d=>d._bizDate>=weekAgoStr&&d._bizDate<=lastDate);
+  if(!recentData.length){section.classList.add('hidden');if(pgArea)pgArea.innerHTML='';return;}
 
   const teamNPS=calcNPS(recentData);
-  if(teamNPS.nps==='-'){section.classList.add('hidden');return;}
+  if(teamNPS.nps==='-'){section.classList.add('hidden');if(pgArea)pgArea.innerHTML='';return;}
 
   const agMap={};
   recentData.forEach(d=>{
@@ -1381,19 +1386,34 @@ function renderWeakAgencyCharts(){
   });
   weakAgencies.sort((a,b)=>a.nps-b.nps);
 
-  if(!weakAgencies.length){section.classList.add('hidden');return;}
+  if(!weakAgencies.length){section.classList.add('hidden');if(pgArea)pgArea.innerHTML='';return;}
+
+  // 페이지네이션 계산
+  const totalPages=Math.max(1,Math.ceil(weakAgencies.length/AGENCY_PER_PAGE));
+  if(_weakAgencyChartPage>=totalPages)_weakAgencyChartPage=totalPages-1;
+  if(_weakAgencyChartPage<0)_weakAgencyChartPage=0;
+  const startIdx=_weakAgencyChartPage*AGENCY_PER_PAGE;
+  const pageAgencies=weakAgencies.slice(startIdx,startIdx+AGENCY_PER_PAGE);
+
+  // 페이지네이션 UI
+  if(pgArea){
+    let pgHTML=`<span style="font-size:11px;color:var(--text-muted)">총 ${weakAgencies.length}개 (${_weakAgencyChartPage+1}/${totalPages} 페이지)</span>`;
+    pgHTML+=`<button class="btn btn-sm btn-outline" ${_weakAgencyChartPage<=0?'disabled':''} onclick="_weakAgencyChartPage--;renderWeakAgencyCharts()">◀ 이전</button>`;
+    pgHTML+=`<button class="btn btn-sm btn-outline" ${_weakAgencyChartPage>=totalPages-1?'disabled':''} onclick="_weakAgencyChartPage++;renderWeakAgencyCharts()">다음 ▶</button>`;
+    pgArea.innerHTML=pgHTML;
+  }
 
   section.classList.remove('hidden');
   let html=`<div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">최근 1주일(${weekAgoStr}~${lastDate}) 팀 전체 평균 종합NPS <b style="color:var(--primary)">${teamNPS.nps}점</b> 미만 대리점 <b style="color:var(--danger)">${weakAgencies.length}개</b></div>`;
   html+='<div class="chart-grid" style="grid-template-columns: 1fr 1fr;">';
-  weakAgencies.forEach((ag,i)=>{
+  pageAgencies.forEach((ag,i)=>{
     html+=`<div class="chart-card" onclick="openChartPopup('${ag.name.replace(/'/g,"\\'")}')"><h4 style="color:var(--danger)">${ag.name} <span style="font-size:11px;font-weight:400">(${ag.nps}점, 평균 대비 ${(ag.nps-teamNPS.nps).toFixed(1)})</span> <span style="font-size:10px;color:var(--text-muted)">🔍 클릭확대</span></h4><canvas id="weakAgChart${i}" height="70"></canvas></div>`;
   });
   html+='</div>';
   area.innerHTML=html;
 
-  weakAgencies.forEach((ag,i)=>{
-    const c=buildAgencyChartOnCanvas('weakAgChart'+i,ag.name,S.rawData,{legendSize:10,pointR:3,borderW:1.5,yMin:40});
+  pageAgencies.forEach((ag,i)=>{
+    const c=buildAgencyChartOnCanvas('weakAgChart'+i,ag.name,baseData,{legendSize:10,pointR:3,borderW:1.5,yMin:40});
     if(c)_weakCharts.push(c);
   });
 }
