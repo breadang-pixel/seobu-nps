@@ -285,6 +285,10 @@ body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;backgrou
     <div class="header-right">
       <span style="font-size:10px;color:rgba(255,255,255,.6);display:flex;gap:10px">
         <span>누적 데이터 <b id="totalRows" style="color:#FFD54F">0</b>건</span>
+        <span style="opacity:.4">|</span>
+        <span>일일 <b id="visitorDaily" style="color:#80DEEA">0</b>명</span>
+        <span style="opacity:.4">|</span>
+        <span>월간 <b id="visitorMonthly" style="color:#80DEEA">0</b>명</span>
       </span>
       <span id="syncIndicator" class="sync-indicator sync-err">🔴 오프라인</span>
       <span class="role-badge" id="roleBadge"></span>
@@ -494,6 +498,7 @@ async function doLogin(role) {
         document.getElementById('notPublished')?.classList.remove('hidden');
         return;
       }
+      recordVisit();
       initApp();
     } else {
       document.getElementById('mainApp')?.classList.remove('hidden');
@@ -503,6 +508,7 @@ async function doLogin(role) {
       document.querySelectorAll('.admin-only-tab').forEach(el=>el.classList.remove('hidden'));
       updatePublishUI();
       setSyncStatus(true);
+      recordVisit();
       if (S.rawData.length) { processData(); showDashboard(); }
     }
   } catch (error) {
@@ -512,6 +518,29 @@ async function doLogin(role) {
 }
 
 function doLogout() { location.reload(); }
+
+// ── 접속자 카운터 ──
+async function recordVisit() {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const month = today.slice(0, 7);                     // YYYY-MM
+  try {
+    await db.ref('npsDashboard/visitors/' + today).transaction(v => (v || 0) + 1);
+    await db.ref('npsDashboard/visitors/' + month).transaction(v => (v || 0) + 1);
+  } catch(e) { console.warn('방문자 기록 오류:', e); }
+  updateVisitorDisplay();
+}
+async function updateVisitorDisplay() {
+  const today = new Date().toISOString().slice(0, 10);
+  const month = today.slice(0, 7);
+  try {
+    const snap = await db.ref('npsDashboard/visitors').once('value');
+    const data = snap.val() || {};
+    const elD = document.getElementById('visitorDaily');
+    const elM = document.getElementById('visitorMonthly');
+    if(elD) elD.textContent = data[today] || 0;
+    if(elM) elM.textContent = data[month] || 0;
+  } catch(e) { console.warn('방문자 표시 오류:', e); }
+}
 
 function initApp() {
   document.getElementById('mainApp')?.classList.remove('hidden');
