@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서부마케팅본부 NPS 현황 대시보드</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NPS 현황">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231B3A5C'/><text y='.9em' x='50' text-anchor='middle' font-size='60'>📊</text></svg>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root{--primary:#1B3A5C;--primary-light:#2C5F8A;--accent:#E8531E;--success:#1A8A4A;--danger:#D32F2F;--warning:#F57C00;--bg:#F4F6F9;--card:#FFF;--border:#DDE3EA;--text:#1E2A3A;--text-secondary:#5A6B7F;--text-muted:#8899AA;--shadow:0 2px 12px rgba(27,58,92,.08);--radius:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+/* ── Overlay / Loading ── */
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-overlay{background:linear-gradient(135deg,#1B3A5C,#2C5F8A,#3A7CB8)}
+.loading-overlay{background:rgba(255,255,255,.88);z-index:10000}
+.loading-spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{margin-top:16px;color:var(--primary);font-weight:600;text-align:center}
+
+/* ── Login ── */
+.login-box{background:#fff;border-radius:16px;padding:48px 40px;width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-box h1{font-size:22px;color:var(--primary);margin-bottom:6px}
+.login-box .sub{color:var(--text-secondary);font-size:13px;margin-bottom:24px}
+.login-box input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:10px;font-size:16px;text-align:center;letter-spacing:8px;outline:none;transition:border .2s;margin-bottom:8px}
+.login-box input:focus{border-color:var(--primary)}
+.login-box .btn-group{display:flex;gap:10px;margin-top:12px}
+.login-box button{flex:1;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-user{background:var(--primary);color:#fff}.btn-user:hover{background:var(--primary-light)}
+.btn-admin{background:#f0f2f5;color:var(--primary)}.btn-admin:hover{background:#e2e6eb}
+.login-error{color:var(--danger);font-size:12px;margin-top:8px;min-height:18px}
+
+/* ── Header ── */
+.header{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px}
+.header h1 .badge{background:rgba(255,255,255,.2);padding:2px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.header-right{display:flex;align-items:center;gap:12px}
+.header-right .role-badge{background:rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;font-size:12px}
+.header-right button{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px}
+.header-right button:hover{background:rgba(255,255,255,.25)}
+.sync-indicator{font-size:11px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.15)}
+.sync-ok{color:#81C784}.sync-err{color:#EF9A9A}
+
+.container{max-width:1440px;margin:0 auto;padding:20px}
+.hidden{display:none!important}
+
+/* ... (기타 스타일 생략, 기능 중심 수정) ... */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:#F0F4F8;padding:10px 12px;text-align:center;font-weight:700;color:var(--primary);border-bottom:2px solid var(--border);cursor:pointer;white-space:nowrap}
+.data-table td{padding:8px 12px;border-bottom:1px solid #f0f2f5;text-align:center}
+.table-scroll{max-height:600px;overflow-y:auto}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="overlay loading-overlay hidden">
+  <div style="text-align:center"><div class="loading-spinner"></div><div class="loading-text" id="loadingText">로딩 중...</div></div>
+</div>
+
+<div id="loginOverlay" class="overlay login-overlay">
+  <div class="login-box">
+    <div style="font-size:40px;margin-bottom:10px">📊</div>
+    <h1>서부마케팅본부 NPS 현황</h1>
+    <p class="sub">비밀번호를 입력하여 접속하세요</p>
+    <input type="password" id="loginPw" maxlength="10" placeholder="비밀번호" onkeyup="if(event.key==='Enter')doLogin('user')">
+    <div class="btn-group">
+      <button class="btn-user" onclick="doLogin('user')">사용자 접속</button>
+      <button class="btn-admin" onclick="doLogin('admin')">관리자 접속</button>
+    </div>
+    <div id="loginError" class="login-error"></div>
+  </div>
+</div>
+
+<div id="mainApp" class="hidden">
+  <div class="header">
+    <h1>📊 서부마케팅본부 NPS 현황 <span class="badge" id="headerDateRange"></span></h1>
+    <div class="header-right">
+      <span style="font-size:10px;color:rgba(255,255,255,.6);display:flex;gap:10px">
+        <span>누적 데이터 <b id="totalRows" style="color:#FFD54F">0</b>건</span>
+        <span>오늘 방문 <b id="viewToday" style="color:#FFD54F">0</b>회</span>
+        <span>월간 방문 <b id="viewMonth" style="color:#FFD54F">0</b>회</span>
+      </span>
+      <span id="syncIndicator" class="sync-indicator sync-err">🔴 오프라인</span>
+      <span class="role-badge" id="roleBadge"></span>
+      <button onclick="location.reload()">로그아웃</button>
+    </div>
+  </div>
+  <div class="container">
+    <div id="notPublished" class="hidden" style="text-align:center; padding:100px;">
+        <h2>데이터가 아직 배포되지 않았습니다.</h2>
+        <p>관리자에게 문의해주세요.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// 전역 상태 객체
+const S = {
+  role: null,
+  rawData: [],
+  filteredData: [],
+  published: false,
+  adminPw: 'admin1234',
+  userPw: '1234',
+  viewStats: {},
+  notices: [],
+  boardItems: []
+};
+
+const CLOUD = {
+  url: './nps_data.json', 
+  async read() {
+    try {
+      const res = await fetch(this.url + '?v=' + Date.now());
+      if (!res.ok) return null;
+      return await res.json();
+    } catch(e) { return null; }
+  }
+};
+
+function showLoading(msg) { 
+  const el = document.getElementById('loadingText');
+  if (el) el.textContent = msg; 
+  document.getElementById('loadingOverlay')?.classList.remove('hidden'); 
+}
+function hideLoading() { document.getElementById('loadingOverlay')?.classList.add('hidden'); }
+
+// 로그인 처리 (수정됨)
+async function doLogin(role) {
+  const pw = document.getElementById('loginPw').value;
+  const err = document.getElementById('loginError');
+
+  showLoading('데이터 확인 중...');
+  const serverData = await CLOUD.read();
+  hideLoading();
+
+  if (serverData) {
+    S.adminPw = serverData.adminPw || 'admin1234';
+    S.userPw = serverData.userPw || '1234';
+    S.published = serverData.published;
+    S.rawData = serverData.npsData || [];
+    S.viewStats = serverData.viewStats || {};
+  }
+
+  if (role === 'admin') {
+    if (pw !== S.adminPw) { if (err) err.textContent = '관리자 비번 오류'; return; }
+    S.role = 'admin';
+  } else {
+    if (pw !== S.userPw) { if (err) err.textContent = '비밀번호 오류'; return; }
+    S.role = 'user';
+  }
+
+  document.getElementById('loginOverlay')?.classList.add('hidden');
+  
+  if (S.role === 'user' && (!S.published || S.rawData.length === 0)) {
+    document.getElementById('mainApp')?.classList.remove('hidden');
+    document.getElementById('notPublished')?.classList.remove('hidden');
+    return;
+  }
+
+  initApp();
+}
+
+// 앱 초기화 (에러 방지 강화)
+function initApp() {
+  const mainApp = document.getElementById('mainApp');
+  if (mainApp) mainApp.classList.remove('hidden');
+
+  const rBadge = document.getElementById('roleBadge');
+  if (rBadge) rBadge.textContent = S.role === 'admin' ? '👑 관리자' : '👤 사용자';
+
+  // 통계 업데이트
+  updateViewCountUI();
+  
+  // 데이터 가공 및 UI 반영
+  processData();
+}
+
+function updateViewCountUI() {
+  const today = new Date().toISOString().slice(0,10);
+  const month = today.slice(0,7);
+  
+  const todayCount = S.viewStats[today] || 0;
+  let monthCount = 0;
+  Object.keys(S.viewStats).forEach(k => { if(k.startsWith(month)) monthCount += S.viewStats[k]; });
+
+  // 안전한 텍스트 삽입 (?. 사용)
+  const elToday = document.getElementById('viewToday');
+  const elMonth = document.getElementById('viewMonth');
+  if (elToday) elToday.textContent = todayCount;
+  if (elMonth) elMonth.textContent = monthCount;
+}
+
+function processData() {
+  // 데이터 필드 가공 로직...
+  const totalEl = document.getElementById('totalRows');
+  if (totalEl) totalEl.textContent = S.rawData.length.toLocaleString();
+
+  const rangeEl = document.getElementById('headerDateRange');
+  if (rangeEl && S.rawData.length > 0) {
+      // 날짜 계산 로직 추가 가능
+  }
+}
+
+function setSyncStatus(ok) {
+  const el = document.getElementById('syncIndicator');
+  if (!el) return;
+  if (ok) { el.className = 'sync-indicator sync-ok'; el.textContent = '🟢 온라인'; }
+  else { el.className = 'sync-indicator sync-err'; el.textContent = '🔴 오프라인'; }
+}
+
+</script>
+</body>
+</html>
