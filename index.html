@@ -582,7 +582,7 @@ function setupRealtimeListener() {
 function getPayload() {
   const compact = S.rawData.map(d => {
     const o = {};
-    ['매장코드','매장명','대리점명','팀명','구분','합계','업무처리일자','평가일자','처리일','처리직원','업무유형','추천지수','추천사유','당사신뢰도','미신뢰사유','종합의견'].forEach(k => { o[k] = d[k] !== undefined ? d[k] : ''; });
+    ['매장코드','매장명','대리점명','팀명','구분','합계','업무처리일자','평가일자','처리일','처리직원','업무유형','NCSI','추천지수','추천사유','당사신뢰도','미신뢰사유','종합의견'].forEach(k => { o[k] = d[k] !== undefined ? d[k] : ''; });
     return o;
   });
   return {
@@ -699,9 +699,7 @@ function processData() {
     d._store = String(findValue(['매장명', '매장', '관리대상매장'])).trim().replace(/대리점 /g, ' ').replace(/대리점$/g, '').trim(); 
     d._gubun = String(findValue(['구분', 'NPS구분'])).trim();
     d._bizType = String(findValue(['업무유형', '유형', '업무'])).trim();
-    const _ncsi = String(findValue(['NCSI','ncsi'])).trim();
-    d._npsType = (_ncsi === '판매성' || _ncsi === '비판매성') ? _ncsi
-               : (['신규가입','기기변경'].includes(d._bizType) ? '판매성' : '비판매성');
+    d._npsType = String(findValue(['NCSI','ncsi'])).trim();
     d._score = Number(findValue(['합계', '점수'])) || 0;
     const bd = String(findValue(['업무처리일자', '처리일자', '일자']) || '').replace(/\.0$/, '');
     d._bizDate = bd.length === 8 ? bd.slice(0,4)+'-'+bd.slice(4,6)+'-'+bd.slice(6,8) : bd;
