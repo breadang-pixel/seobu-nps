@@ -519,13 +519,14 @@ async function doLogin(role) {
 
 function doLogout() { location.reload(); }
 
-// ── 접속자 카운터 ──
+// ── 접속자 카운터 (npsDashboard와 분리된 별도 경로 사용 → 배포 초기화 방지) ──
+const VISITOR_MONTHLY_BASE = { '2026-04': 1051 }; // 월별 누적 기준값 (이전 카운트 반영)
 async function recordVisit() {
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
   const month = today.slice(0, 7);                     // YYYY-MM
   try {
-    await db.ref('npsDashboard/visitors/' + today).transaction(v => (v || 0) + 1);
-    await db.ref('npsDashboard/visitors/' + month).transaction(v => (v || 0) + 1);
+    await db.ref('siteVisitors/' + today).transaction(v => (v || 0) + 1);
+    await db.ref('siteVisitors/' + month).transaction(v => (v || 0) + 1);
   } catch(e) { console.warn('방문자 기록 오류:', e); }
   updateVisitorDisplay();
 }
@@ -533,12 +534,13 @@ async function updateVisitorDisplay() {
   const today = new Date().toISOString().slice(0, 10);
   const month = today.slice(0, 7);
   try {
-    const snap = await db.ref('npsDashboard/visitors').once('value');
+    const snap = await db.ref('siteVisitors').once('value');
     const data = snap.val() || {};
+    const base = VISITOR_MONTHLY_BASE[month] || 0;
     const elD = document.getElementById('visitorDaily');
     const elM = document.getElementById('visitorMonthly');
     if(elD) elD.textContent = data[today] || 0;
-    if(elM) elM.textContent = data[month] || 0;
+    if(elM) elM.textContent = (data[month] || 0) + base;
   } catch(e) { console.warn('방문자 표시 오류:', e); }
 }
 
